@@ -6,7 +6,7 @@
 
     android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:background="@drawable/top_border_radius"
+    android:background="@drawable/top_border_radius_50dp"
     android:textColor="@color/black"
     android:textSize="30sp"
     tools:layout_editor_absoluteX="10dp"
@@ -53,6 +53,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageButton
+        android:id="@+id/footer_button_join_group"
         android:src="@drawable/ic_plus"
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -74,7 +75,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
-            android:id="@+id/footer_button_join_group"
+            android:id="@+id/footer_button_find_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/white"
@@ -95,7 +96,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/footer_button_join_group" />
+            app:layout_constraintTop_toBottomOf="@id/footer_button_find_group" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

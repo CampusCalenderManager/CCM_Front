@@ -1,7 +1,12 @@
 package com.example.ccm
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
+import android.widget.ImageButton
+import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -54,5 +59,11 @@ class GroupManagementActivity : AppCompatActivity() {
 
         groupView.adapter = groupViewAdapter
         groupView.layoutManager = LinearLayoutManager(this)
+
+        val groupJoinButton = findViewById<ImageButton>(R.id.footer_button_join_group)
+
+        groupJoinButton.setOnClickListener {
+            GroupJoinPopupActivity(this).show()
+        }
     }
 }

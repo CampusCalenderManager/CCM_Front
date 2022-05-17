@@ -10,6 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Ccm">
         <activity
+            android:name=".GroupJoinPopupActivity"
+            android:theme="@style/Theme.AppCompat.Transparent.NoActionBar"
+            android:exported="false" />
+        <activity
             android:name=".GroupManagementActivity"
             android:exported="true">
             <intent-filter>
@@ -20,8 +24,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false"></activity>
     </application>
 
 </manifest>
