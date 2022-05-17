@@ -4,5 +4,5 @@ data class GroupCard(
     var groupTitle : String,
     var groupDescription : String,
     var currentWeekOfProgress : Int,
-    var endWeekOfProgress : Int
+    var maxWeekOfProgress : Int
 )
