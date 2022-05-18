@@ -5,8 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageButton
-import androidx.appcompat.app.AlertDialog
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -66,7 +64,13 @@ class GroupManagementActivity : AppCompatActivity() {
         val groupJoinButton = findViewById<ImageButton>(R.id.footer_button_join_group)
 
         groupJoinButton.setOnClickListener {
-            GroupJoinPopupActivity(this).show()
+            GroupJoinPopup(this).show()
+        }
+
+        val groupCreateButton = findViewById<ImageButton>(R.id.footer_create_group_button)
+        groupCreateButton.setOnClickListener {
+            val intent = Intent(this, GroupCreateActivity::class.java)
+            startActivity(intent)
         }
     }
 }

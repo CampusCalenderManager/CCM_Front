@@ -9,10 +9,11 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.ccm.databinding.ActivityGroupJoinPopupBinding
 
 
-class GroupJoinPopupActivity(context : Context) : Dialog(context) {
+class GroupJoinPopup(context: Context) : Dialog(context) {
     private lateinit var binding : ActivityGroupJoinPopupBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -53,7 +53,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageButton
-        android:id="@+id/footer_add_schedule_button"
+        android:id="@+id/footer_create_group_button"
         android:src="@drawable/ic_plus"
         android:layout_width="50dp"
         android:layout_height="50dp"
