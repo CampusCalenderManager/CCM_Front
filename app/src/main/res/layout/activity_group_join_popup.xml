@@ -4,7 +4,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:background="@drawable/white_back_border_radius_40dp"
+        android:background="@drawable/white_back_border_radius_30dp"
         android:layout_width="330dp"
         android:layout_height="250dp"
         android:layout_gravity="center"
@@ -14,7 +14,7 @@
             android:id="@+id/group_join_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="65dp"
+            android:layout_marginTop="50dp"
             android:text="그룹 참여 코드를 입력해주세요"
             android:textColor="#3800D6"
             android:textSize="23sp"
@@ -29,7 +29,7 @@
             app:layout_constraintTop_toBottomOf="@id/group_join_title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="15dp"
             android:text="참여하려는 그룹에서 공유한\n그룹 참여 코드를 아래에 입력해주세요"
             android:textSize="13sp"
             android:textColor="@color/black"
@@ -39,7 +39,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="280dp"
-            android:layout_height="40dp"
+            android:layout_height="50dp"
             app:layout_constraintTop_toBottomOf="@id/group_join_description"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -53,13 +53,14 @@
                 android:inputType="text"
                 android:hint="GROUP CODE"
                 android:paddingLeft="15dp"
-                android:textSize="15sp"
+                android:textSize="18sp"
                 android:textColorHint="#33000000"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
             <Button
+                android:id="@+id/group_join_with_code_button"
                 android:layout_width="90dp"
                 android:layout_height="match_parent"
                 android:background="@drawable/group_join_button_top_bottom_right_radius_20dp"

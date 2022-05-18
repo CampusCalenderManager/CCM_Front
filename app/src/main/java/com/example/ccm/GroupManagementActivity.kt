@@ -15,6 +15,8 @@ class GroupManagementActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_group_management)
 
+        // Todo : 서버에서 사용자의 그룹 리스트를 받아서 보여주기
+        // Todo : 리스트 아이템 클릭시 해당하는 그룹의 상세 페이지 보이기
         val items = mutableListOf<GroupCard>()
 
         items.add(
@@ -60,6 +62,7 @@ class GroupManagementActivity : AppCompatActivity() {
         groupView.adapter = groupViewAdapter
         groupView.layoutManager = LinearLayoutManager(this)
 
+        // 그룹 참여 팝업 띄우기
         val groupJoinButton = findViewById<ImageButton>(R.id.footer_button_join_group)
 
         groupJoinButton.setOnClickListener {
