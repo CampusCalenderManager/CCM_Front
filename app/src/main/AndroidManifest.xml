@@ -15,6 +15,12 @@
             android:exported="false" />
         <activity
             android:name=".GroupManagementActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".datePickerActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".AddSchedule"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

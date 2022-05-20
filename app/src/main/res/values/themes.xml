@@ -29,4 +29,8 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+  
+    <style name="datepicker_save_button" parent="Theme.AppCompat.Light">
+        <!-- 취소/확인버튼 색상 -->
+    </style>
 </resources>
