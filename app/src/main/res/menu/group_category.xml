@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_item_login"
+        android:title="자료구조"
+        />
+    <item
+        android:id="@+id/menu_item_setting"
+        android:title="기초프로젝트랩"
+        />
+    <item
+        android:id="@+id/menu_item_help"
+        android:title="컴퓨터프로그래밍3"
+        />
+</menu>

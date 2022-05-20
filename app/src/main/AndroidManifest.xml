@@ -10,6 +10,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Ccm">
         <activity
+            android:name=".datePickerActivity"
+            android:exported="true" />
+        <activity
+            android:name=".AddSchedule"
+            android:exported="true" />
+
+
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

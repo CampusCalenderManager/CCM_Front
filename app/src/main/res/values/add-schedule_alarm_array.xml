@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="alarm_array">
+        <item>15분 전</item>
+        <item>30분 전</item>
+        <item>1시간 전</item>
+        <item>3시간 전</item>
+        <item>6시간 전</item>
+        <item>12시간 전</item>
+        <item>하루 전</item>
+    </string-array>
+    
+</resources>
