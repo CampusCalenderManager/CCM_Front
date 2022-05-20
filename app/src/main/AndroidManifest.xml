@@ -11,7 +11,7 @@
         android:theme="@style/Theme.Ccm">
         <activity
             android:name=".GroupCreateActivity"
-            android:theme="@style/Theme.Ccm.Purple"
+            android:theme="@style/Theme.Ccm"
             android:exported="false" />
         <activity
             android:name=".GroupManagementActivity"
