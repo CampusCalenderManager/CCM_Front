@@ -13,13 +13,14 @@
     app:layout_constraintTop_toTopOf="parent">
 
 
-
     <NumberPicker
         android:id="@+id/yearpicker_datepicker"
         android:layout_width="63dp"
         android:layout_height="124dp"
         android:layout_marginStart="28dp"
         android:layout_marginTop="28dp"
+        android:layout_marginBottom="28dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,6 +30,8 @@
         android:layout_height="124dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="28dp"
+        android:layout_marginBottom="28dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintStart_toEndOf="@+id/yearpicker_datepicker"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,52 +42,58 @@
         android:layout_width="63dp"
         android:layout_height="124dp"
         android:layout_marginTop="28dp"
+        android:layout_marginBottom="28dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.582"
         app:layout_constraintStart_toEndOf="@+id/monthpicker_datepicker"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/cancel_button_datepicker"
-        android:layout_width="170dp"
-        android:layout_height="50dp"
-        android:layout_margin="0dp"
-        android:background="#FFFFFF"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:padding="0dp"
-        android:text="취소"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/yearpicker_datepicker"
-        app:layout_constraintVertical_bias="1.0">
-
-    </Button>
-
-    <Button
-        android:id="@+id/save_button_datepicker"
-        android:layout_width="170dp"
-        android:layout_height="50dp"
-        android:layout_margin="0dp"
-        android:layout_marginStart="165dp"
-        android:background="#C5CAFF"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:padding="0dp"
-        android:text="완료"
-
-
-        android:textColor="@color/white"
-        android:textSize="20sp"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/cancel_button_datepicker"
-        app:layout_constraintTop_toBottomOf="@+id/datepicker_datepicker"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintStart_toStartOf="parent">
 
-    </Button>
+        <Button
+            android:id="@+id/cancel_button_datepicker"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_gravity="bottom"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:background="#FFFFFF"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:padding="0dp"
+            android:text="취소"
+            android:textSize="20sp">
+
+        </Button>
+
+        <Button
+            android:id="@+id/save_button_datepicker"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_gravity="bottom"
+            android:layout_margin="0dp"
+            android:layout_marginStart="165dp"
+            android:layout_weight="1"
+            android:background="#C5CAFF"
+            android:insetTop="0dp"
+
+
+            android:insetBottom="0dp"
+            android:padding="0dp"
+            android:text="완료"
+            android:textColor="@color/white"
+            android:textSize="20sp">
+
+        </Button>
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

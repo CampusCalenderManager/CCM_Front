@@ -13,48 +13,6 @@ import java.util.*
 
 class AddSchedule : AppCompatActivity() {
 
-    fun setDatePicker(){
-        val now = System.currentTimeMillis();
-
-        val startDate = findViewById<TextView>(com.example.ccm.R.id.startDate) as TextView
-        val finalDate = findViewById<TextView>(com.example.ccm.R.id.finalDate) as TextView
-
-        val currentTime = Calendar.getInstance().time
-        val dateFormat = SimpleDateFormat("dd", Locale.KOREA)
-        val monthFormat = SimpleDateFormat("MM", Locale.KOREA)
-        val yearFormat = SimpleDateFormat("yyyy", Locale.KOREA)
-
-        val currentYear = yearFormat.format(currentTime)
-        val currentMonth = monthFormat.format(currentTime)
-        val currentDate = dateFormat.format(currentTime).toInt() + 1
-
-        finalDate.text = "${currentYear}년 ${currentMonth}월 ${currentDate}일"
-        startDate.text = "${currentYear}년 ${currentMonth}월 ${currentDate}일"
-
-        setStartDate(startDate)
-        setFinalDate(finalDate)
-
-    }
-
-    fun setGropeSpinner(){
-        val groupArray = arrayOf("자료구조(02분반)", "상남자 스터디" ,"기초프로젝트랩(01분반)", "컴퓨터프로그래밍3(03분반)", "확률및통계", "논리회로", "계산이론")
-
-        val groupeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,groupArray)
-
-        val groupSpinner : Spinner = findViewById(R.id.groupSpinner)
-        groupSpinner.adapter = groupeAdapter
-    }
-
-
-    fun setAlarmSpinner(){
-        val alarmArray = arrayOf("15분 전", "30분 전", "1시간 전", "3시간 전", "6시간 전", "12시간 전", "하루 전")
-
-        val alarmAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,alarmArray)
-
-        val alarmSpinner : Spinner = findViewById(R.id.alarmSpinner)
-        alarmSpinner.adapter = alarmAdapter
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(com.example.ccm.R.layout.activity_add_schedule)
@@ -140,7 +98,7 @@ class AddSchedule : AppCompatActivity() {
             //기본값 설정인데 왜 안되지??
             year.value = currentYear.toInt()
             month.value = currentMonth.toInt()
-            date.value = currentDate.toInt() + 1
+            date.value = currentDate.toInt()
 
 
             //  취소 버튼 클릭 시
@@ -215,7 +173,7 @@ class AddSchedule : AppCompatActivity() {
 
             year.value = currentYear.toInt()
             month.value = currentMonth.toInt()
-            date.value = currentDate.toInt() + 1
+            date.value = currentDate.toInt()
 
 
             //  취소 버튼 클릭 시
@@ -240,6 +198,48 @@ class AddSchedule : AppCompatActivity() {
         }
 
     }
+    fun setDatePicker(){
+        val now = System.currentTimeMillis();
+
+        val startDate = findViewById<TextView>(com.example.ccm.R.id.startDate) as TextView
+        val finalDate = findViewById<TextView>(com.example.ccm.R.id.finalDate) as TextView
+
+        val currentTime = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("dd", Locale.KOREA)
+        val monthFormat = SimpleDateFormat("MM", Locale.KOREA)
+        val yearFormat = SimpleDateFormat("yyyy", Locale.KOREA)
+
+        val currentYear = yearFormat.format(currentTime)
+        val currentMonth = monthFormat.format(currentTime)
+        val currentDate = dateFormat.format(currentTime).toInt()
+
+        finalDate.text = "${currentYear}년 ${currentMonth}월 ${currentDate}일"
+        startDate.text = "${currentYear}년 ${currentMonth}월 ${currentDate}일"
+
+        setStartDate(startDate)
+        setFinalDate(finalDate)
+
+    }
+
+    fun setGropeSpinner(){
+        val groupArray = arrayOf("자료구조(02분반)", "상남자 스터디" ,"기초프로젝트랩(01분반)", "컴퓨터프로그래밍3(03분반)", "확률및통계", "논리회로", "계산이론")
+
+        val groupeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,groupArray)
+
+        val groupSpinner : Spinner = findViewById(R.id.groupSpinner)
+        groupSpinner.adapter = groupeAdapter
+    }
+
+
+    fun setAlarmSpinner(){
+        val alarmArray = arrayOf("15분 전", "30분 전", "1시간 전", "3시간 전", "6시간 전", "12시간 전", "하루 전")
+
+        val alarmAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,alarmArray)
+
+        val alarmSpinner : Spinner = findViewById(R.id.alarmSpinner)
+        alarmSpinner.adapter = alarmAdapter
+    }
+
 }
 
 
