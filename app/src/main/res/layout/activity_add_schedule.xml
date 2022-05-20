@@ -10,7 +10,6 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout4"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:background="@drawable/purple_bottom_border_radius_25dp"
@@ -50,206 +49,206 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:fillViewport="true"
-        app:layout_constraintBottom_toTopOf="@+id/footer_add_schedule"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:layout_marginTop="100dp"
+        android:background="@drawable/white_back_border_radius_30dp"
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        android:elevation="20dp"
+        android:orientation="vertical"
+
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="78dp"
+                android:layout_height="31dp"
+                android:text="그룹명"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.093"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.224"></TextView>
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:checked="false"
+                android:text="공유"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:thumb="@drawable/switch_thumb_selector"
+                android:track="@drawable/switch_track_selector"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.9"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.223"
+                tools:checked="false" />
+
+        <Spinner
+            android:id="@+id/groupSpinner"
+            android:layout_width="350dp"
+            android:layout_height="33dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.491"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.708" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="30dp"
+        android:elevation="20dp"
+        android:orientation="vertical"
+        android:background="@drawable/white_back_border_radius_30dp"
+
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+
+
+
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="65dp"
+                android:layout_height="wrap_content"
+                android:text="날짜"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.093"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.129"></TextView>
+
+        <EditText
+            android:id="@+id/startDate"
+            android:layout_width="350dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="64dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/purple_top_border_radius_25dp"
+            android:backgroundTint="#C5CAFF"
+            android:clickable="true"
+            android:focusable="false"
+            android:gravity="center"
+            android:text="startDate"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.488"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+
+            android:id="@+id/finalDate"
+            android:layout_width="350dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="120dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/purple_bottom_border_radius_25dp"
+            android:backgroundTint="#C5CAFF"
+            android:clickable="true"
+            android:focusable="false"
+            android:gravity="center"
+            android:text="finalDate"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.488"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginTop="256dp"
+        android:background="@drawable/white_back_border_radius_30dp"
+        android:elevation="20dp"
+
+        android:orientation="vertical"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+
+        <TextView
+            android:layout_width="65dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:text="알림"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.093"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.204"></TextView>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout"
-                android:layout_width="match_parent"
-                android:layout_height="160dp"
-                android:layout_marginTop="30dp"
-                android:background="@drawable/white_back_border_radius_30dp"
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:checked="false"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:thumb="@drawable/switch_thumb_selector"
+            android:track="@drawable/switch_track_selector"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.9"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.204"
+            tools:checked="false" />
 
-                android:elevation="20dp"
-                android:orientation="vertical"
+        <Spinner
+            android:id="@+id/alarmSpinner"
+            android:layout_width="350dp"
+            android:layout_height="33dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.491"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.712" />
 
-                android:textColor="@color/white"
-                android:textSize="30sp">
-
-
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="78dp"
-                    android:layout_height="31dp"
-                    android:text="그룹명"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.093"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.224"></TextView>
-
-                <Switch
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:checked="false"
-                    android:text="공유"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:thumb="@drawable/switch_thumb_selector"
-                    android:track="@drawable/switch_track_selector"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.9"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.223"
-                    tools:checked="false" />
-
-                <Spinner
-                    android:id="@+id/groupSpinner"
-                    android:layout_width="350dp"
-                    android:layout_height="33dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.491"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.708" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="30dp"
-                android:background="@drawable/white_back_border_radius_30dp"
-                android:elevation="20dp"
-                android:orientation="vertical"
-
-                android:textColor="@color/white"
-                android:textSize="30sp">
-
-
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="65dp"
-                    android:layout_height="wrap_content"
-                    android:text="날짜"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.093"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.129"></TextView>
-
-                <EditText
-                    android:id="@+id/startDate"
-                    android:layout_width="350dp"
-                    android:layout_height="50dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="64dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/purple_top_border_radius_25dp"
-                    android:backgroundTint="#C5CAFF"
-                    android:clickable="true"
-                    android:focusable="false"
-                    android:gravity="center"
-                    android:text="startDate"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.488"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <EditText
-
-                    android:id="@+id/finalDate"
-                    android:layout_width="350dp"
-                    android:layout_height="50dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="120dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/purple_bottom_border_radius_25dp"
-                    android:backgroundTint="#C5CAFF"
-                    android:clickable="true"
-                    android:focusable="false"
-                    android:gravity="center"
-                    android:text="finalDate"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.488"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout3"
-                android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="30dp"
-                android:background="@drawable/white_back_border_radius_30dp"
-
-                android:elevation="20dp"
-                android:orientation="vertical"
-                android:textColor="@color/white"
-                android:textSize="30sp">
-
-
-                <TextView
-                    android:layout_width="65dp"
-                    android:layout_height="wrap_content"
-                    android:text="알림"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.093"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.204"></TextView>
-
-                <Switch
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:checked="false"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:thumb="@drawable/switch_thumb_selector"
-                    android:track="@drawable/switch_track_selector"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.9"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.204"
-                    tools:checked="false" />
-
-                <Spinner
-                    android:id="@+id/alarmSpinner"
-                    android:layout_width="350dp"
-                    android:layout_height="33dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.491"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.712" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include
         android:id="@+id/footer_add_schedule"
