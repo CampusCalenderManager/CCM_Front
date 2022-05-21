@@ -49,14 +49,7 @@
             app:layout_constraintVertical_bias="0.2"></TextView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-    <include
-        android:id="@+id/footer_add_schedule"
-        layout="@layout/footer_add_schedule"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
 
-        />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout4"
@@ -92,6 +85,7 @@
             app:layout_constraintVertical_bias="0.238"></TextView>
 
         <EditText
+            android:id="@+id/signUpName"
             android:layout_width="290dp"
             android:layout_height="40dp"
             android:layout_marginTop="12dp"
@@ -134,6 +128,7 @@
             app:layout_constraintVertical_bias="0.238"></TextView>
 
         <EditText
+            android:id="@+id/signUpUsername"
             android:layout_width="290dp"
             android:layout_height="40dp"
             android:layout_marginTop="12dp"
@@ -177,19 +172,57 @@
             app:layout_constraintVertical_bias="0.238"></TextView>
 
         <EditText
+            android:id="@+id/signUpPassword"
             android:layout_width="290dp"
             android:layout_height="40dp"
             android:layout_marginTop="12dp"
             android:hint="비밀번호를 입력하시오."
+            android:inputType="textPassword"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <include
-        layout="@layout/footer_sign_up"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="16dp"></include>
+    <androidx.constraintlayout.widget.ConstraintLayout
 
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/top_border_radius_50dp"
+        android:textColor="@color/black"
+        android:textSize="30sp"
+        tools:layout_editor_absoluteX="10dp"
+        android:elevation="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:layout_width="110dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="50dp"
+            android:background="@drawable/white_button_border_radius_25dp"
+            android:elevation="20dp"
+            android:text="취소"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/signUpButton"
+            android:layout_width="110dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="50dp"
+            android:background="@drawable/purple_button_border_radius_25dp"
+            android:elevation="20dp"
+            android:text="회원가입"
+
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
