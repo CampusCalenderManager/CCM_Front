@@ -4,20 +4,21 @@ import retrofit2.Call
 import retrofit2.http.*
 
 interface ApiAddSchedule {
-    @FormUrlEncoded
+    //@FormUrlEncoded
 
     @Headers("Content-Type: application/json")
     @POST("/schedule")
     fun postAddSchedule(
         @Header("AccessToken") AccessToken: String,
-        @Field("title") title: String,
-        @Field("startDate") startDate: String,
-        @Field("endDate") endDate: String,
-        @Field("startAlarm") startAlarm: String,
-        @Field("endAlarm") endAlarm: String,
-        @Field("isShared") isShared: String,
-        @Field("color") color: String,
-        @Field("organizationId") organizationId: String,
+        @Body param : AddScheduleJson
+        /*@Body title: String,
+        @Body startDate: String,
+        @Body endDate: String,
+        @Body startAlarm: String,
+        @Body endAlarm: String,
+        @Body isShared: String,
+        @Body color: String,
+        @Body organizationId: String,*/
     ): Call<AddScheduleJson>
 
 }

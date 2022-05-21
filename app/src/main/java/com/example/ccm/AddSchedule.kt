@@ -39,16 +39,18 @@ class AddSchedule : AppCompatActivity() {
 
 
 
-        apiAddSchedule.postAddSchedule("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImV4cCI6MTY3OTAzODE3OSwibWVtYmVySWQiOjJ9.GGF7XJk8MfmgzJMiYgYNE1ptFahtQ5HwXBo8vmnSWns4-ZNrSEwMkMi5J48vWL9W5VtuZY9T6E3KXGrEIvAWTw",
-            "공유O",
-            "2022-05-14T00:00:00",
-            "2022-05-14T00:00:00",
-            "2022-05-14T00:00:00",
-            "2022-05-14T00:00:00",
-            "false",
-            "red",
-            "1")
-            .enqueue(object : Callback<AddScheduleJson> {
+        apiAddSchedule.postAddSchedule("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImV4cCI6MTY3OTAzOTIyMSwibWVtYmVySWQiOjF9.IkyEfwU8EiiNB9-zGKFdGOQ2N8F20c-jjXUCQAbWq0kUUS75gxUGGPXwpqA-ml5q9eYejcQ_CaelzTwpx2faqw",
+            AddScheduleJson(
+                "o",
+                "2022-05-14T00:00:00",
+                "2022-05-14T00:00:00",
+                "2022-05-14T00:00:00",
+                "2022-05-14T00:00:00",
+                "false",
+                "red",
+                "1"
+            )
+        ).enqueue(object : Callback<AddScheduleJson> {
                 override fun onResponse(
                     call: Call<AddScheduleJson>,
                     response: Response<AddScheduleJson>,
