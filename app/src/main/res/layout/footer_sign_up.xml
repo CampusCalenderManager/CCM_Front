@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:background="@drawable/top_border_radius_50dp"
+    android:textColor="@color/black"
+    android:textSize="30sp"
+    tools:layout_editor_absoluteX="10dp"
+    android:elevation="10dp"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent">
+
+    <Button
+        android:id="@+id/group_create_cancel_button"
+        android:layout_width="110dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="50dp"
+        android:background="@drawable/white_button_border_radius_25dp"
+        android:elevation="20dp"
+        android:text="취소"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/group_create_button"
+        android:layout_width="110dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="50dp"
+        android:background="@drawable/purple_button_border_radius_25dp"
+        android:elevation="20dp"
+        android:text="회원가입"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@id/group_create_cancel_button"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

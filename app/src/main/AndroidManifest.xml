@@ -10,24 +10,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Ccm.pupple">
         <activity
+            android:name=".SignUp"
+            android:exported="true" />
+        <activity
             android:name=".GroupCreateActivity"
             android:exported="true" />
         <activity
             android:name=".GroupManagementActivity"
-            android:theme="@style/Theme.Ccm.white"
-            android:exported="true">
-
-
-        </activity>
+            android:exported="true"
+            android:theme="@style/Theme.Ccm.white"></activity>
         <activity
             android:name=".AddSchedule"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-
         </activity>
         <activity
             android:name=".MainActivity"
