@@ -35,7 +35,8 @@ android {
 }
 
 dependencies {
-
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0' //알아서 최신 버전으로..ㅎㅎ
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.6.0'
