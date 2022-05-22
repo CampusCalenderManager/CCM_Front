@@ -42,16 +42,16 @@ class SignUp : AppCompatActivity() {
 
         apiAddSchedule.postSignUp("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImV4cCI6MTY3OTAzOTIyMSwibWVtYmVySWQiOjF9.IkyEfwU8EiiNB9-zGKFdGOQ2N8F20c-jjXUCQAbWq0kUUS75gxUGGPXwpqA-ml5q9eYejcQ_CaelzTwpx2faqw",
             SignUpJson(
-                signUpName.toString(),
-                signUpUsername.toString(),
-                signUpPassword.toString(),
+                signUpName.text.toString(),
+                signUpUsername.text.toString(),
+                signUpPassword.text.toString(),
             )
         ).enqueue(object : Callback<SignUpJson> {
             override fun onResponse(
                 call: Call<SignUpJson>,
                 response: Response<SignUpJson>,
             ) {
-                Log.d(TAG, "성공 : ${response.raw()} ${response.message()}")
+                Log.d(TAG, "성공 : ${response.raw()} ${response}")
             }
 
             override fun onFailure(call: Call<SignUpJson>, t: Throwable) {
