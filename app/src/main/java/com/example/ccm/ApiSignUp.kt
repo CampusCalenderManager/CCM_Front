@@ -10,7 +10,7 @@ interface ApiSignUp {
     //@FormUrlEncoded
 
     @Headers("Content-Type: application/json")
-    @POST("/signup")
+    @POST("/signUp")
     fun postSignUp(
         @Header("AccessToken") AccessToken: String,
         @Body param : SignUpJson
