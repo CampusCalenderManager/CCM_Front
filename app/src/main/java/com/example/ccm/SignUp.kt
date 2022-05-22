@@ -7,11 +7,10 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
+import okhttp3.ResponseBody
+import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.reflect.Type
 
 class SignUp : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +28,14 @@ class SignUp : AppCompatActivity() {
         }
     }
 
+    private val nullOnEmptyConverterFactory = object : Converter.Factory() {
+        fun converterFactory() = this
+        override fun responseBodyConverter(type: Type, annotations: Array<out Annotation>, retrofit: Retrofit) = object : Converter<ResponseBody, Any?> {
+            val nextResponseBodyConverter = retrofit.nextResponseBodyConverter<Any?>(converterFactory(), type, annotations)
+            override fun convert(value: ResponseBody) = if (value.contentLength() != 0L) nextResponseBodyConverter.convert(value) else null
+        }
+    }
+
     private fun callPostSignUpApi(
         signUpName: EditText,
         signUpUsername: EditText,
@@ -36,6 +43,7 @@ class SignUp : AppCompatActivity() {
     ) {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://jenkins.argos.or.kr")
+            .addConverterFactory(nullOnEmptyConverterFactory)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val apiAddSchedule = retrofit.create(ApiSignUp::class.java)
