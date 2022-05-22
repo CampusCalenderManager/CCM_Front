@@ -2,95 +2,71 @@ package com.example.ccm
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog.OnDateSetListener
+import android.content.ContentValues.TAG
+import android.content.Intent
+import android.os.AsyncTask
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 class AddSchedule : AppCompatActivity() {
 
-    fun setDatePicker(){
-        val now = System.currentTimeMillis();
-
-        val startDate = findViewById<TextView>(com.example.ccm.R.id.startDate) as TextView
-        val finalDate = findViewById<TextView>(com.example.ccm.R.id.finalDate) as TextView
-
-        val currentTime = Calendar.getInstance().time
-        val dateFormat = SimpleDateFormat("dd", Locale.KOREA)
-        val monthFormat = SimpleDateFormat("MM", Locale.KOREA)
-        val yearFormat = SimpleDateFormat("yyyy", Locale.KOREA)
-
-        val currentYear = yearFormat.format(currentTime)
-        val currentMonth = monthFormat.format(currentTime)
-        val currentDate = dateFormat.format(currentTime).toInt() + 1
-
-        finalDate.text = "${currentYear}년 ${currentMonth}월 ${currentDate}일"
-        startDate.text = "${currentYear}년 ${currentMonth}월 ${currentDate}일"
-
-        setStartDate(startDate)
-        setFinalDate(finalDate)
-
-    }
-
-    fun setGropeSpinner(){
-        val groupArray = arrayOf("자료구조(02분반)", "상남자 스터디" ,"기초프로젝트랩(01분반)", "컴퓨터프로그래밍3(03분반)", "확률및통계", "논리회로", "계산이론")
-
-        val groupeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,groupArray)
-
-        val groupSpinner : Spinner = findViewById(R.id.groupSpinner)
-        groupSpinner.adapter = groupeAdapter
-    }
-
-
-    fun setAlarmSpinner(){
-        val alarmArray = arrayOf("15분 전", "30분 전", "1시간 전", "3시간 전", "6시간 전", "12시간 전", "하루 전")
-
-        val alarmAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,alarmArray)
-
-        val alarmSpinner : Spinner = findViewById(R.id.alarmSpinner)
-        alarmSpinner.adapter = alarmAdapter
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(com.example.ccm.R.layout.activity_add_schedule)
+        setContentView(R.layout.activity_add_schedule)
 
         setDatePicker()
         setAlarmSpinner()
         setGropeSpinner()
 
 
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://jenkins.argos.or.kr")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val apiAddSchedule = retrofit.create(ApiAddSchedule::class.java)
 
 
 
-//        val et_time = findViewById<View>(R.id.Time) as EditText
-//        et_time.setOnClickListener {
-//            val mcurrentTime = Calendar.getInstance()
-//            val hour = mcurrentTime[Calendar.HOUR_OF_DAY]
-//            val minute = mcurrentTime[Calendar.MINUTE]
-//            val mTimePicker: TimePickerDialog
-//            mTimePicker = TimePickerDialog(this,
-//                { timePicker, selectedHour, selectedMinute ->
-//                    var selectedHour = selectedHour
-//                    var state = "AM"
-//                    // 선택한 시간이 12를 넘을경우 "PM"으로 변경 및 -12시간하여 출력 (ex : PM 6시 30분)
-//                    if (selectedHour > 12) {
-//                        selectedHour -= 12
-//                        state = "PM"
-//                    }
-//                    // EditText에 출력할 형식 지정
-//                    et_time.setText(state + " " + selectedHour + "시 " + selectedMinute + "분")
-//                }, hour, minute, false) // true의 경우 24시간 형식의 TimePicker 출현
-//            mTimePicker.setTitle("Select Time")
-//            mTimePicker.show()
-//        }
+        apiAddSchedule.postAddSchedule("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImV4cCI6MTY3OTAzOTIyMSwibWVtYmVySWQiOjF9.IkyEfwU8EiiNB9-zGKFdGOQ2N8F20c-jjXUCQAbWq0kUUS75gxUGGPXwpqA-ml5q9eYejcQ_CaelzTwpx2faqw",
+            AddScheduleJson(
+                "o",
+                "2022-05-14T00:00:00",
+                "2022-05-14T00:00:00",
+                "2022-05-14T00:00:00",
+                "2022-05-14T00:00:00",
+                "false",
+                "red",
+                "1"
+            )
+        ).enqueue(object : Callback<AddScheduleJson> {
+                override fun onResponse(
+                    call: Call<AddScheduleJson>,
+                    response: Response<AddScheduleJson>,
+                ) {
+                    Log.d(TAG, "성공 : ${response.raw()} ${response.message()}")
+                }
+
+                override fun onFailure(call: Call<AddScheduleJson>, t: Throwable) {
+                    Log.d(TAG, "실패 : $t")
+                }
+            })
+
+
     }
 
-    fun setFinalDate(finalDate:TextView){
+    fun setFinalDate(finalDate: TextView) {
         finalDate.setOnClickListener {
 
             val dialog = AlertDialog.Builder(this).create()
@@ -140,7 +116,7 @@ class AddSchedule : AppCompatActivity() {
             //기본값 설정인데 왜 안되지??
             year.value = currentYear.toInt()
             month.value = currentMonth.toInt()
-            date.value = currentDate.toInt() + 1
+            date.value = currentDate.toInt()
 
 
             //  취소 버튼 클릭 시
@@ -166,7 +142,7 @@ class AddSchedule : AppCompatActivity() {
     }
 
 
-    fun setStartDate(startDate:TextView){
+    fun setStartDate(startDate: TextView) {
         startDate.setOnClickListener {
 
             val dialog = AlertDialog.Builder(this).create()
@@ -215,7 +191,7 @@ class AddSchedule : AppCompatActivity() {
 
             year.value = currentYear.toInt()
             month.value = currentMonth.toInt()
-            date.value = currentDate.toInt() + 1
+            date.value = currentDate.toInt()
 
 
             //  취소 버튼 클릭 시
@@ -240,6 +216,57 @@ class AddSchedule : AppCompatActivity() {
         }
 
     }
+
+    fun setDatePicker() {
+        val now = System.currentTimeMillis();
+
+        val startDate = findViewById<TextView>(com.example.ccm.R.id.startDate) as TextView
+        val finalDate = findViewById<TextView>(com.example.ccm.R.id.finalDate) as TextView
+
+        val currentTime = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("dd", Locale.KOREA)
+        val monthFormat = SimpleDateFormat("MM", Locale.KOREA)
+        val yearFormat = SimpleDateFormat("yyyy", Locale.KOREA)
+
+        val currentYear = yearFormat.format(currentTime)
+        val currentMonth = monthFormat.format(currentTime)
+        val currentDate = dateFormat.format(currentTime).toInt()
+
+        finalDate.text = "${currentYear}년 ${currentMonth}월 ${currentDate}일"
+        startDate.text = "${currentYear}년 ${currentMonth}월 ${currentDate}일"
+
+        setStartDate(startDate)
+        setFinalDate(finalDate)
+
+    }
+
+    fun setGropeSpinner() {
+        val groupArray = arrayOf("자료구조(02분반)",
+            "상남자 스터디",
+            "기초프로젝트랩(01분반)",
+            "컴퓨터프로그래밍3(03분반)",
+            "확률및통계",
+            "논리회로",
+            "계산이론")
+
+        val groupeAdapter =
+            ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, groupArray)
+
+        val groupSpinner: Spinner = findViewById(R.id.groupSpinner)
+        groupSpinner.adapter = groupeAdapter
+    }
+
+
+    fun setAlarmSpinner() {
+        val alarmArray = arrayOf("15분 전", "30분 전", "1시간 전", "3시간 전", "6시간 전", "12시간 전", "하루 전")
+
+        val alarmAdapter =
+            ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, alarmArray)
+
+        val alarmSpinner: Spinner = findViewById(R.id.alarmSpinner)
+        alarmSpinner.adapter = alarmAdapter
+    }
+
 }
 
 
