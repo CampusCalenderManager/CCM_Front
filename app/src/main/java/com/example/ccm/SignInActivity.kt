@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import com.example.ccm.API.APISignIn
+import com.example.ccm.API.Prefs
 import com.example.ccm.API.SignInJSON
 import retrofit2.Call
 import retrofit2.Callback
@@ -26,6 +28,8 @@ class SignInActivity : AppCompatActivity() {
             val passwordInput = findViewById<EditText>(R.id.login_password_input)
 
             callSignInAPI(userNameInput.text.toString(), passwordInput.text.toString())
+
+            Toast.makeText(this, ccmApp.prefs.token, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -45,15 +49,17 @@ class SignInActivity : AppCompatActivity() {
                 userName,
                 password
             )
-        ).enqueue(object : Callback<SignInJSON> {
-            override fun onResponse(
-                call: Call<SignInJSON>,
-                response: Response<SignInJSON>,
-            ) {
-                Log.d(ContentValues.TAG, "성공 : ${response.raw()} ${response.message()}")
+        ).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                Log.d("login POST", "${response.code()}")
+
+                // 로그인이 정상적으로 됐다면 토큰을 저장
+                if (response.code() == 200) {
+                    ccmApp.prefs.token = response.headers().values("accesstoken")[0]
+                }
             }
 
-            override fun onFailure(call: Call<SignInJSON>, t: Throwable) {
+            override fun onFailure(call: Call<Void>, t: Throwable) {
                 Log.d(ContentValues.TAG, "실패 : $t")
             }
         })
