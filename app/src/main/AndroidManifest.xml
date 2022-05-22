@@ -11,6 +11,9 @@
         android:theme="@style/Theme.Ccm.pupple">
 
         <activity
+            android:name=".SignUp"
+            android:exported="true" />
+        <activity
             android:name=".GroupCreateActivity"
             android:exported="true" />
         <activity
