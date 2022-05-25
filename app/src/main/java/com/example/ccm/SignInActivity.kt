@@ -8,7 +8,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.example.ccm.API.APISignIn
-import com.example.ccm.API.Prefs
 import com.example.ccm.API.SignInJSON
 import retrofit2.Call
 import retrofit2.Callback
@@ -29,7 +28,7 @@ class SignInActivity : AppCompatActivity() {
 
             callSignInAPI(userNameInput.text.toString(), passwordInput.text.toString())
 
-            Toast.makeText(this, ccmApp.prefs.token, Toast.LENGTH_SHORT).show()
+            // Toast.makeText(this, CCMApp.prefs.token, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -55,7 +54,7 @@ class SignInActivity : AppCompatActivity() {
 
                 // 로그인이 정상적으로 됐다면 토큰을 저장
                 if (response.code() == 200) {
-                    ccmApp.prefs.token = response.headers().values("accesstoken")[0]
+                    // CCMApp.prefs.token = response.headers().values("accesstoken")[0]
                 }
             }
 

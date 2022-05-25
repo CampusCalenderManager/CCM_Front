@@ -11,9 +11,33 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Ccm.pupple"
-        android:name=".ccmApp">
+        android:name=".CCMApp">
+
         <activity
             android:name=".SignInActivity"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".SignUpActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".GroupCreateActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".GroupManagementActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Ccm.white" />
+
+        <activity
+            android:name=".AddSchedule"
+            android:exported="false" >
+        </activity>
+
+        <activity
+            android:name=".MainActivity"
             android:exported="true">
 
             <intent-filter>
@@ -22,22 +46,5 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".SignUpActivity"
-            android:exported="true" />
-        <activity
-            android:name=".GroupCreateActivity"
-            android:exported="true" />
-        <activity
-            android:name=".GroupManagementActivity"
-            android:exported="true"
-            android:theme="@style/Theme.Ccm.white" />
-        <activity
-            android:name=".AddSchedule"
-            android:exported="true" >
-        </activity>
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
     </application>
 </manifest>
