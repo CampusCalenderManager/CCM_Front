@@ -7,6 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTintMode="screen"
     android:orientation="vertical"
     tools:context=".AddSchedule">
 
@@ -71,6 +72,86 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="132dp"
+
+                android:layout_marginTop="30dp"
+                android:background="@drawable/white_back_border_radius_30dp"
+
+                android:elevation="20dp"
+                android:orientation="vertical"
+                android:textColor="@color/white"
+                android:textSize="30sp">
+
+
+                <TextView
+                    android:layout_width="78dp"
+                    android:layout_height="31dp"
+                    android:text="제목"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.093"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.224"></TextView>
+
+                <EditText
+
+                    android:layout_width="353dp"
+                    android:layout_height="55dp"
+                    android:backgroundTint="#C0C6FF"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.701" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="139dp"
+
+                android:layout_marginTop="30dp"
+                android:background="@drawable/white_back_border_radius_30dp"
+
+                android:elevation="20dp"
+                android:orientation="vertical"
+                android:textColor="@color/white"
+                android:textSize="30sp">
+
+
+                <TextView
+                    android:layout_width="78dp"
+                    android:layout_height="31dp"
+                    android:text="내용"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.087"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.224"></TextView>
+
+                <EditText
+
+                    android:layout_width="352dp"
+                    android:layout_height="58dp"
+                    android:backgroundTint="#C0C6FF"
+                    android:backgroundTintMode="src_atop"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.491"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.691" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout"
