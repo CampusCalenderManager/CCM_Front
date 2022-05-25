@@ -1,4 +1,4 @@
-package com.example.ccm
+package com.example.ccm.API
 
 import retrofit2.Call
 import retrofit2.http.Body
@@ -13,7 +13,7 @@ interface ApiSignUp {
     @POST("/signUp")
     fun postSignUp(
         @Header("AccessToken") AccessToken: String,
-        @Body param : SignUpJson
-    ): Call<SignUpJson>
+        @Body param : SignUpJSON
+    ): Call<SignUpJSON>
 
 }

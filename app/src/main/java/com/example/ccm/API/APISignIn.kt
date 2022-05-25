@@ -1,6 +1,5 @@
 package com.example.ccm.API
 
-import com.example.ccm.SignUpJson
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Headers

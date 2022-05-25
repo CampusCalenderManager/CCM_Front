@@ -1,6 +1,6 @@
-package com.example.ccm
+package com.example.ccm.API
 
-data class SignUpJson(
+data class SignUpJSON(
     var name: String,
     var username: String,
     var password: String,

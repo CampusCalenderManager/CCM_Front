@@ -4,15 +4,16 @@ import android.content.ContentValues.TAG
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import com.example.ccm.API.ApiSignUp
+import com.example.ccm.API.SignUpJSON
 import okhttp3.ResponseBody
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
 
-class SignUp : AppCompatActivity() {
+class SignUpActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
@@ -49,20 +50,20 @@ class SignUp : AppCompatActivity() {
         val apiAddSchedule = retrofit.create(ApiSignUp::class.java)
 
         apiAddSchedule.postSignUp("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImV4cCI6MTY3OTAzOTIyMSwibWVtYmVySWQiOjF9.IkyEfwU8EiiNB9-zGKFdGOQ2N8F20c-jjXUCQAbWq0kUUS75gxUGGPXwpqA-ml5q9eYejcQ_CaelzTwpx2faqw",
-            SignUpJson(
+            SignUpJSON(
                 signUpName.text.toString(),
                 signUpUsername.text.toString(),
                 signUpPassword.text.toString(),
             )
-        ).enqueue(object : Callback<SignUpJson> {
+        ).enqueue(object : Callback<SignUpJSON> {
             override fun onResponse(
-                call: Call<SignUpJson>,
-                response: Response<SignUpJson>,
+                call: Call<SignUpJSON>,
+                response: Response<SignUpJSON>,
             ) {
                 Log.d(TAG, "성공 : ${response.raw()} ${response}")
             }
 
-            override fun onFailure(call: Call<SignUpJson>, t: Throwable) {
+            override fun onFailure(call: Call<SignUpJSON>, t: Throwable) {
                 Log.d(TAG, "실패 : $t")
             }
         })

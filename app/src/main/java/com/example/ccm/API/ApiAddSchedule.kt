@@ -1,5 +1,6 @@
-package com.example.ccm
+package com.example.ccm.API
 
+import com.example.ccm.AddScheduleJson
 import retrofit2.Call
 import retrofit2.http.*
 

@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SignUp"
+            android:name=".SignUpActivity"
             android:exported="true" />
         <activity
             android:name=".GroupCreateActivity"

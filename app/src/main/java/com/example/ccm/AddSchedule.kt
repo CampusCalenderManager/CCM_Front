@@ -1,16 +1,14 @@
 package com.example.ccm
 
 import android.app.AlertDialog
-import android.app.DatePickerDialog.OnDateSetListener
 import android.content.ContentValues.TAG
-import android.content.Intent
-import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.example.ccm.API.ApiAddSchedule
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -71,22 +69,20 @@ class AddSchedule : AppCompatActivity() {
 
             val dialog = AlertDialog.Builder(this).create()
             val edialog: LayoutInflater = LayoutInflater.from(this)
-            val mView: View = edialog.inflate(com.example.ccm.R.layout.activity_date_picker, null)
+            val mView: View = edialog.inflate(R.layout.activity_date_picker, null)
 
-            val year: NumberPicker = mView.findViewById(com.example.ccm.R.id.yearpicker_datepicker)
+            val year: NumberPicker = mView.findViewById(R.id.yearpicker_datepicker)
             val month: NumberPicker =
-                mView.findViewById(com.example.ccm.R.id.monthpicker_datepicker)
-            val date: NumberPicker = mView.findViewById(com.example.ccm.R.id.datepicker_datepicker)
-            val cancel: Button = mView.findViewById(com.example.ccm.R.id.cancel_button_datepicker)
-            val save: Button = mView.findViewById(com.example.ccm.R.id.save_button_datepicker)
+                mView.findViewById(R.id.monthpicker_datepicker)
+            val date: NumberPicker = mView.findViewById(R.id.datepicker_datepicker)
+            val cancel: Button = mView.findViewById(R.id.cancel_button_datepicker)
+            val save: Button = mView.findViewById(R.id.save_button_datepicker)
 
             val currentTime = Calendar.getInstance().time
-            val weekdayFormat = SimpleDateFormat("EE", Locale.KOREA)
             val dateFormat = SimpleDateFormat("dd", Locale.KOREA)
             val monthFormat = SimpleDateFormat("MM", Locale.KOREA)
             val yearFormat = SimpleDateFormat("yyyy", Locale.KOREA)
 
-            val currentWeekDay = weekdayFormat.format(currentTime)
             val currentYear = yearFormat.format(currentTime)
             val currentMonth = monthFormat.format(currentTime)
             val currentDate = dateFormat.format(currentTime)
@@ -147,22 +143,20 @@ class AddSchedule : AppCompatActivity() {
 
             val dialog = AlertDialog.Builder(this).create()
             val edialog: LayoutInflater = LayoutInflater.from(this)
-            val mView: View = edialog.inflate(com.example.ccm.R.layout.activity_date_picker, null)
+            val mView: View = edialog.inflate(R.layout.activity_date_picker, null)
 
-            val year: NumberPicker = mView.findViewById(com.example.ccm.R.id.yearpicker_datepicker)
+            val year: NumberPicker = mView.findViewById(R.id.yearpicker_datepicker)
             val month: NumberPicker =
-                mView.findViewById(com.example.ccm.R.id.monthpicker_datepicker)
-            val date: NumberPicker = mView.findViewById(com.example.ccm.R.id.datepicker_datepicker)
-            val cancel: Button = mView.findViewById(com.example.ccm.R.id.cancel_button_datepicker)
-            val save: Button = mView.findViewById(com.example.ccm.R.id.save_button_datepicker)
+                mView.findViewById(R.id.monthpicker_datepicker)
+            val date: NumberPicker = mView.findViewById(R.id.datepicker_datepicker)
+            val cancel: Button = mView.findViewById(R.id.cancel_button_datepicker)
+            val save: Button = mView.findViewById(R.id.save_button_datepicker)
 
             val currentTime = Calendar.getInstance().time
-            val weekdayFormat = SimpleDateFormat("EE", Locale.getDefault())
             val dateFormat = SimpleDateFormat("dd", Locale.getDefault())
             val monthFormat = SimpleDateFormat("MM", Locale.getDefault())
             val yearFormat = SimpleDateFormat("yyyy", Locale.getDefault())
 
-            val currentWeekDay = weekdayFormat.format(currentTime)
             val currentYear = yearFormat.format(currentTime)
             val currentMonth = monthFormat.format(currentTime)
             val currentDate = dateFormat.format(currentTime)
@@ -218,8 +212,6 @@ class AddSchedule : AppCompatActivity() {
     }
 
     fun setDatePicker() {
-        val now = System.currentTimeMillis();
-
         val startDate = findViewById<TextView>(com.example.ccm.R.id.startDate) as TextView
         val finalDate = findViewById<TextView>(com.example.ccm.R.id.finalDate) as TextView
 
