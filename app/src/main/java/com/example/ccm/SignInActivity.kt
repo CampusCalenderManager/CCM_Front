@@ -28,7 +28,7 @@ class SignInActivity : AppCompatActivity() {
             val passwordInput = findViewById<EditText>(R.id.login_password_input)
 
             callSignInAPI(userNameInput.text.toString(), passwordInput.text.toString())
-
+            Log.d("token", ccmApp.prefs.token.toString())
             Toast.makeText(this, ccmApp.prefs.token, Toast.LENGTH_SHORT).show()
         }
     }

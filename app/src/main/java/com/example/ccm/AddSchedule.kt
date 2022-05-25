@@ -14,17 +14,20 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.text.Format
 import java.text.SimpleDateFormat
 import java.util.*
 
 
+var postTitle = ""
+var postStartDate = ""
+var postEndDate = ""
+var postStartAlarm = ""
+var postIsShared = ""
+var postColor = ""
+var postOrganizationId = ""
+
 class AddSchedule : AppCompatActivity() {
-    var sHour = 0
-    var sMinute = 0
-
-
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,26 +38,35 @@ class AddSchedule : AppCompatActivity() {
         setGropeSpinner()
 
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://jenkins.argos.or.kr")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val apiAddSchedule = retrofit.create(ApiAddSchedule::class.java)
 
+        val saveButton = findViewById<Button>(R.id.add_schedule_save_button)
+        Log.e("clicked", "clicked")
 
+        saveButton.setOnClickListener {
+        //ccmApp.prefs.token.toString()
 
-        apiAddSchedule.postAddSchedule("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImV4cCI6MTY3OTAzOTIyMSwibWVtYmVySWQiOjF9.IkyEfwU8EiiNB9-zGKFdGOQ2N8F20c-jjXUCQAbWq0kUUS75gxUGGPXwpqA-ml5q9eYejcQ_CaelzTwpx2faqw",
-            AddScheduleJson(
-                "o",
-                "2022-05-14T00:00:00",
-                "2022-05-14T00:00:00",
-                "2022-05-14T00:00:00",
-                "2022-05-14T00:00:00",
-                "false",
-                "red",
-                "1"
-            )
-        ).enqueue(object : Callback<AddScheduleJson> {
+            setStartAlarm()
+
+//            postStartAlarm =
+
+            val retrofit = Retrofit.Builder()
+                .baseUrl("https://jenkins.argos.or.kr")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+            val apiAddSchedule = retrofit.create(ApiAddSchedule::class.java)
+
+            apiAddSchedule.postAddSchedule("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImV4cCI6MTY3OTM5MDg5MiwibWVtYmVySWQiOjV9.FwNVVxk2JPC3EUNRlI8K6lEyBWF7IWcaxEvr1Yki_5QytUgzwKaOlnYy6g3n-Ot72Cuagv79qVAr56Ht5ErFzQ",
+                AddScheduleJson(
+                    "o",
+                    "2022-05-14T00:00:00",
+                    "2022-05-14T00:00:00",
+                    "2022-05-14T00:00:00",
+                    "2022-05-14T00:00:00",
+                    "false",
+                    "red",
+                    "1"
+                )
+            ).enqueue(object : Callback<AddScheduleJson> {
                 override fun onResponse(
                     call: Call<AddScheduleJson>,
                     response: Response<AddScheduleJson>,
@@ -66,6 +78,7 @@ class AddSchedule : AppCompatActivity() {
                     Log.d(TAG, "실패 : $t")
                 }
             })
+        }
 
 
     }
@@ -85,6 +98,7 @@ class AddSchedule : AppCompatActivity() {
             val save: Button = mView.findViewById(R.id.save_button_datepicker)
 
             val currentTime = Calendar.getInstance().time
+            Log.e(TAG, currentTime.toString())
             val dateFormat = SimpleDateFormat("dd", Locale.KOREA)
             val monthFormat = SimpleDateFormat("MM", Locale.KOREA)
             val yearFormat = SimpleDateFormat("yyyy", Locale.KOREA)
@@ -229,11 +243,13 @@ class AddSchedule : AppCompatActivity() {
         val currentYear = yearFormat.format(currentTime)
         val currentMonth = monthFormat.format(currentTime)
         val currentDate = dateFormat.format(currentTime).toInt()
-        val currentHour = hourFormat.format(currentTime).toInt()+9
+        val currentHour = hourFormat.format(currentTime).toInt() + 9
         val currentMinute = minuteFormat.format(currentTime)
 
-        finalDate.text = "${currentYear}년 ${currentMonth}월 ${currentDate}일 ${currentHour}시 ${currentMinute}분"
-        startDate.text = "${currentYear}년 ${currentMonth}월 ${currentDate}일 ${currentHour}시 ${currentMinute}분"
+        finalDate.text =
+            "${currentYear}년 ${currentMonth}월 ${currentDate}일 ${currentHour}시 ${currentMinute}분"
+        startDate.text =
+            "${currentYear}년 ${currentMonth}월 ${currentDate}일 ${currentHour}시 ${currentMinute}분"
 
         setStartDate(startDate)
         setFinalDate(finalDate)
@@ -259,16 +275,19 @@ class AddSchedule : AppCompatActivity() {
 
     fun setAlarmSpinner() {
         val alarmArray = arrayOf("15분 전", "30분 전", "1시간 전", "3시간 전", "6시간 전", "12시간 전", "하루 전")
+        val alarmSpinner:Spinner = findViewById(R.id.alarmSpinner)
 
         val alarmAdapter =
             ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, alarmArray)
 
-        val alarmSpinner: Spinner = findViewById(R.id.alarmSpinner)
+
         alarmSpinner.adapter = alarmAdapter
+
+
     }
 
 
-    private fun setStartTimePicker(startDate: TextView, year: Int, month: Int, date: Int){
+    private fun setStartTimePicker(startDate: TextView, year: Int, month: Int, date: Int) {
         val currentTime = Calendar.getInstance()
         val dialog = AlertDialog.Builder(this).create()
         val edialog: LayoutInflater = LayoutInflater.from(this)
@@ -327,23 +346,22 @@ class AddSchedule : AppCompatActivity() {
         //  완료 버튼 클릭 시
         save.setOnClickListener {
             startDate.text =
-                ( "${year}년 ${month}월 ${date}일 ${hour.value}시 ${minute.value *5}분")
+                ("${year}년 ${String.format("%02d",month)}월 ${String.format("%02d",date)}일 ${String.format("%02d",hour.value)}시 ${String.format("%02d",minute.value * 5)}분")
             dialog.dismiss()
             dialog.cancel()
         }
 
-
+        postStartDate = "${year}-${String.format("%02d",month)}-${date}T${hour.value}:${minute.value * 5}:00"
 
         dialog.setView(mView)
         dialog.create()
         dialog.show()
 
 
-
     }
 
 
-    private fun setFinalTimePicker(finalDate: TextView, year: Int, month: Int, date: Int){
+    private fun setFinalTimePicker(finalDate: TextView, year: Int, month: Int, date: Int) {
         val currentTime = Calendar.getInstance()
         val dialog = AlertDialog.Builder(this).create()
         val edialog: LayoutInflater = LayoutInflater.from(this)
@@ -351,10 +369,12 @@ class AddSchedule : AppCompatActivity() {
 
 
         val hour: NumberPicker =
-            mView.findViewById(com.example.ccm.R.id.hour_timepicker)
-        val minute: NumberPicker = mView.findViewById(com.example.ccm.R.id.minute_timepicker)
-        val cancel: Button = mView.findViewById(com.example.ccm.R.id.cancel_button_timePicker)
-        val save: Button = mView.findViewById(com.example.ccm.R.id.save_button_timePicker)
+            mView.findViewById(R.id.hour_timepicker)
+        val minute: NumberPicker = mView.findViewById(R.id.minute_timepicker)
+        val cancel: Button = mView.findViewById(R.id.cancel_button_timePicker)
+        val save: Button = mView.findViewById(R.id.save_button_timePicker)
+
+
 
 
         val formatter = NumberPicker.Formatter { value ->
@@ -401,12 +421,14 @@ class AddSchedule : AppCompatActivity() {
 
         //  완료 버튼 클릭 시
         save.setOnClickListener {
+
             finalDate.text =
-                ( "${year}년 ${month}월 ${date}일 ${hour.value}시 ${minute.value *5}분")
+                ("${year}년 ${String.format("%02d",month)}월 ${String.format("%02d",date)}일 ${String.format("%02d",hour.value)}시 ${String.format("%02d",minute.value * 5)}분")
             dialog.dismiss()
             dialog.cancel()
         }
 
+        postEndDate = "${year}-${String.format("%02d",month)}-${date}T${hour.value}:${minute.value * 5}:00"
 
 
         dialog.setView(mView)
@@ -414,6 +436,23 @@ class AddSchedule : AppCompatActivity() {
         dialog.show()
 
 
+    }
+    fun setStartAlarm(){
+        val alarmSpinner:Spinner = findViewById(R.id.alarmSpinner)
+
+        val formatter : SimpleDateFormat = SimpleDateFormat("yyyy-MM-d'T'HH:mm")
+        val date : Date = formatter.parse(postStartDate)
+
+//        (today.time.time - date.time) / (60 * 60 * 24 * 1000)
+        Log.e(TAG, date.time.toString())
+        postStartAlarm =postStartDate
+        when(alarmSpinner.selectedItemId.toInt()){
+            0 -> {
+                postStartAlarm = (date.time - 15*60 * 1000).toString()
+                val date2  = formatter.format(postStartAlarm.toLong())
+                Log.e("zz",date2)
+            }
+        }
 
     }
 
@@ -421,30 +460,3 @@ class AddSchedule : AppCompatActivity() {
 }
 
 
-
-//override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_add_schedule)
-//
-//        val vDate = findViewById<TextView>(R.id.date_picker_start)
-//        vDate.setOnClickListener {
-//            val intent = Intent(this, datePickerActivity::class.java)
-//            startActivity(intent)
-//            Log.e("asdf", "hhh ")
-//        }
-//
-//    }
-//
-//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-//
-//
-//        return super.onCreateOptionsMenu(menu)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item?.itemId) {//코드적기
-//
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
-//
