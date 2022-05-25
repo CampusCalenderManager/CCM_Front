@@ -1,6 +1,5 @@
 package com.example.ccm.API
 
-import com.example.ccm.AddScheduleJson
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -11,7 +10,7 @@ interface ApiAddSchedule {
     @POST("/schedule")
     fun postAddSchedule(
         @Header("AccessToken") AccessToken: String,
-        @Body param : AddScheduleJson
+        @Body param : AddScheduleJSON
         /*@Body title: String,
         @Body startDate: String,
         @Body endDate: String,
@@ -20,6 +19,6 @@ interface ApiAddSchedule {
         @Body isShared: String,
         @Body color: String,
         @Body organizationId: String,*/
-    ): Call<AddScheduleJson>
+    ): Call<AddScheduleJSON>
 
 }
