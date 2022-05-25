@@ -78,10 +78,10 @@
                 app:layout_constraintTop_toTopOf="parent"/>
 
             <Button
-                android:id="@+id/calendar_category_setting_button"
+                android:id="@+id/calendar_update_button"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:background="@drawable/ic_gear"
+                android:background="@drawable/ic_repeat"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:backgroundTint="#C0C6FF"/>

@@ -136,6 +136,11 @@ class MainActivity : AppCompatActivity() {
             // finish() // 특별한 상황이 아니라면 항상 Activity 를 끝내준다.
         }
 
+        binding.calendarUpdateButton.setOnClickListener {
+            // Todo : 버튼 누르면 서버에서 데이터 받아서 표시
+            // Todo : 받은 데이터 로컬에 다시 저장
+        }
+
         binding.calendarBottomGroupJoinButton.setOnClickListener {
             GroupJoinPopup(this).show()
         }
