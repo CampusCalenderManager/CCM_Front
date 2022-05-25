@@ -19,6 +19,12 @@ import java.util.*
 
 
 class AddSchedule : AppCompatActivity() {
+    var sHour = 0
+    var sMinute = 0
+
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,8 +129,7 @@ class AddSchedule : AppCompatActivity() {
 
             //  완료 버튼 클릭 시
             save.setOnClickListener {
-                finalDate.text =
-                    (year.value).toString() + "년 " + (month.value).toString() + "월 " + (date.value).toString() + "일"
+                setFinalTimePicker(finalDate, year.value, month.value, date.value)
                 dialog.dismiss()
                 dialog.cancel()
             }
@@ -196,8 +201,7 @@ class AddSchedule : AppCompatActivity() {
 
             //  완료 버튼 클릭 시
             save.setOnClickListener {
-                startDate.text =
-                    (year.value).toString() + "년 " + (month.value).toString() + "월 " + (date.value).toString() + "일"
+                setStartTimePicker(startDate, year.value, month.value, date.value)
                 dialog.dismiss()
                 dialog.cancel()
             }
@@ -219,13 +223,17 @@ class AddSchedule : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("dd", Locale.KOREA)
         val monthFormat = SimpleDateFormat("MM", Locale.KOREA)
         val yearFormat = SimpleDateFormat("yyyy", Locale.KOREA)
+        val hourFormat = SimpleDateFormat("hh", Locale.KOREA)
+        val minuteFormat = SimpleDateFormat("mm", Locale.KOREA)
 
         val currentYear = yearFormat.format(currentTime)
         val currentMonth = monthFormat.format(currentTime)
         val currentDate = dateFormat.format(currentTime).toInt()
+        val currentHour = hourFormat.format(currentTime).toInt()+9
+        val currentMinute = minuteFormat.format(currentTime)
 
-        finalDate.text = "${currentYear}년 ${currentMonth}월 ${currentDate}일"
-        startDate.text = "${currentYear}년 ${currentMonth}월 ${currentDate}일"
+        finalDate.text = "${currentYear}년 ${currentMonth}월 ${currentDate}일 ${currentHour}시 ${currentMinute}분"
+        startDate.text = "${currentYear}년 ${currentMonth}월 ${currentDate}일 ${currentHour}시 ${currentMinute}분"
 
         setStartDate(startDate)
         setFinalDate(finalDate)
@@ -259,7 +267,159 @@ class AddSchedule : AppCompatActivity() {
         alarmSpinner.adapter = alarmAdapter
     }
 
+
+    private fun setStartTimePicker(startDate: TextView, year: Int, month: Int, date: Int){
+        val currentTime = Calendar.getInstance()
+        val dialog = AlertDialog.Builder(this).create()
+        val edialog: LayoutInflater = LayoutInflater.from(this)
+        val mView: View = edialog.inflate(R.layout.time_picker, null)
+
+
+        val hour: NumberPicker =
+            mView.findViewById(com.example.ccm.R.id.hour_timepicker)
+        val minute: NumberPicker = mView.findViewById(com.example.ccm.R.id.minute_timepicker)
+        val cancel: Button = mView.findViewById(com.example.ccm.R.id.cancel_button_timePicker)
+        val save: Button = mView.findViewById(com.example.ccm.R.id.save_button_timePicker)
+
+
+        val formatter = NumberPicker.Formatter { value ->
+            val temp = value * 5
+            "" + temp
+        }
+        minute.setFormatter(formatter)
+
+        //  순환 안되게 막기
+        hour.wrapSelectorWheel = false
+        minute.wrapSelectorWheel = false
+
+        //  editText 설정 해제
+        hour.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
+        minute.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
+
+
+        //  최소값 설정
+        hour.minValue = 0
+        minute.minValue = 0
+
+        //  최대값 설정
+        hour.maxValue = 24
+        minute.maxValue = 11
+
+        val now: Long = System.currentTimeMillis()
+
+        val mDate = Date(now)
+        val simpleHour = SimpleDateFormat("hh")
+        val simpleMinute = SimpleDateFormat("mm")
+        val getHour = simpleHour.format(mDate)
+        val getMinute = simpleMinute.format(mDate)
+
+        //기본값 설정인데 왜 안되지??
+        hour.value = getHour.toInt() + 9
+        minute.value = 6
+
+
+        //  취소 버튼 클릭 시
+        cancel.setOnClickListener {
+            dialog.dismiss()
+            dialog.cancel()
+        }
+
+        //  완료 버튼 클릭 시
+        save.setOnClickListener {
+            startDate.text =
+                ( "${year}년 ${month}월 ${date}일 ${hour.value}시 ${minute.value *5}분")
+            dialog.dismiss()
+            dialog.cancel()
+        }
+
+
+
+        dialog.setView(mView)
+        dialog.create()
+        dialog.show()
+
+
+
+    }
+
+
+    private fun setFinalTimePicker(finalDate: TextView, year: Int, month: Int, date: Int){
+        val currentTime = Calendar.getInstance()
+        val dialog = AlertDialog.Builder(this).create()
+        val edialog: LayoutInflater = LayoutInflater.from(this)
+        val mView: View = edialog.inflate(R.layout.time_picker, null)
+
+
+        val hour: NumberPicker =
+            mView.findViewById(com.example.ccm.R.id.hour_timepicker)
+        val minute: NumberPicker = mView.findViewById(com.example.ccm.R.id.minute_timepicker)
+        val cancel: Button = mView.findViewById(com.example.ccm.R.id.cancel_button_timePicker)
+        val save: Button = mView.findViewById(com.example.ccm.R.id.save_button_timePicker)
+
+
+        val formatter = NumberPicker.Formatter { value ->
+            val temp = value * 5
+            "" + temp
+        }
+        minute.setFormatter(formatter)
+
+        //  순환 안되게 막기
+        hour.wrapSelectorWheel = false
+        minute.wrapSelectorWheel = false
+
+        //  editText 설정 해제
+        hour.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
+        minute.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
+
+
+        //  최소값 설정
+        hour.minValue = 0
+        minute.minValue = 0
+
+        //  최대값 설정
+        hour.maxValue = 24
+        minute.maxValue = 11
+
+        val now: Long = System.currentTimeMillis()
+
+        val mDate = Date(now)
+        val simpleHour = SimpleDateFormat("hh")
+        val simpleMinute = SimpleDateFormat("mm")
+        val getHour = simpleHour.format(mDate)
+        val getMinute = simpleMinute.format(mDate)
+
+        //기본값 설정인데 왜 안되지??
+        hour.value = getHour.toInt() + 9
+        minute.value = 6
+
+
+        //  취소 버튼 클릭 시
+        cancel.setOnClickListener {
+            dialog.dismiss()
+            dialog.cancel()
+        }
+
+        //  완료 버튼 클릭 시
+        save.setOnClickListener {
+            finalDate.text =
+                ( "${year}년 ${month}월 ${date}일 ${hour.value}시 ${minute.value *5}분")
+            dialog.dismiss()
+            dialog.cancel()
+        }
+
+
+
+        dialog.setView(mView)
+        dialog.create()
+        dialog.show()
+
+
+
+    }
+
+
 }
+
 
 
 //override fun onCreate(savedInstanceState: Bundle?) {
