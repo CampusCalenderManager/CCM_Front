@@ -1,12 +1,13 @@
-package com.example.ccm
+package com.example.ccm.API
 
-data class AddScheduleJson(
+data class AddScheduleJSON(
     var title: String,
+    var content: String,
     var startDate: String,
     var endDate: String,
     var startAlarm: String,
-    var endAlarm: String,
     var isShared: String,
+    var isAlarm: String,
     var color: String,
     var organizationId: String,
 )
