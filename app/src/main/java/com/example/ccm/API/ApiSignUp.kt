@@ -12,8 +12,7 @@ interface ApiSignUp {
     @Headers("Content-Type: application/json")
     @POST("/signUp")
     fun postSignUp(
-        @Header("AccessToken") AccessToken: String,
         @Body param : SignUpJSON
-    ): Call<SignUpJSON>
+    ): Call<Void>
 
 }
