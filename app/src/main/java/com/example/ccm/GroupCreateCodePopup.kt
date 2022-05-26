@@ -1,8 +1,7 @@
 package com.example.ccm
 
 import android.app.Dialog
-import android.content.ClipData
-import android.content.Context
+import android.content.*
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -12,9 +11,21 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ccm.databinding.ActivityGroupJoinPopupBinding
-import android.content.ClipboardManager
 import android.graphics.drawable.Drawable
 import android.widget.TextView
+import androidx.core.content.ContextCompat.startActivity
+import com.example.ccm.API.APIGroupListInfo
+import com.example.ccm.API.GroupInfoJSON
+import com.example.ccm.API.GroupListInfoJSON
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 
 class GroupCreateCodePopup(context: Context) : Dialog(context) {
@@ -42,6 +53,11 @@ class GroupCreateCodePopup(context: Context) : Dialog(context) {
             groupJoinCodeCopyButton.setBackgroundResource(R.drawable.light_purple_group_join_button_top_bottom_right_radius_20dp)
             groupJoinCodeCopyButton.text = "복사완료!"
             groupJoinCode.setTextColor(Color.parseColor("#8E8E8E"))
+
+
         }
     }
+
+
+
 }

@@ -36,9 +36,6 @@ class GroupRecyclerViewAdapter(val items : MutableList<GroupCard>) : RecyclerVie
 
             cardTitle.text = item.groupTitle
             cardDescription.text = item.groupDescription
-            cardCurrentWeek.text = "${item.currentWeekOfProgress}주차"
-            cardEndWeek.text = "${item.maxWeekOfProgress}주차"
-            cardProgress.progress = (item.currentWeekOfProgress.toFloat()*100 / item.maxWeekOfProgress.toFloat()).toInt()
         }
     }
 }
