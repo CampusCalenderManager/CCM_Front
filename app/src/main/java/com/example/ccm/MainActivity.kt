@@ -1,5 +1,6 @@
 package com.example.ccm
 
+import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
@@ -15,10 +16,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.drunkenboys.ckscalendar.data.CalendarScheduleObject
+import com.example.ccm.API.APIGroupListInfo
+import com.example.ccm.API.GroupInfoJSON
+import com.example.ccm.API.GroupListInfoJSON
 import com.example.ccm.CCMApp.Companion.userLocalDB
 import com.example.ccm.LocalDB.User
 import com.example.ccm.databinding.ActivityMainBinding
 import kotlinx.coroutines.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
@@ -148,6 +157,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.calendarBottomGroupJoinButton.setOnClickListener {
+
             GroupJoinPopup(this).show()
         }
 
@@ -157,14 +167,53 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             // finish() // 특별한 상황이 아니라면 항상 Activity 를 끝내준다.
         }
-
         binding.footerBottomGroupManagementButton.setOnClickListener {
-            val intent = Intent(this, GroupManagementActivity::class.java)
-            startActivity(intent)
+
+            Log.e("groupPage", "1")
+            // Todo : 서버에서 사용자의 그룹 리스트를 받아서 보여주기
+            val retrofit = Retrofit.Builder()
+                .baseUrl("http://jenkins.argos.or.kr")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+            val apiGroupListInfo = retrofit.create(APIGroupListInfo::class.java)
+
+            CoroutineScope(Dispatchers.Main).launch {
+                val users = CoroutineScope(Dispatchers.IO).async {
+                    CCMApp.userLocalDB.userDao().getAll()
+                }.await()
+//                Log.e("token", users[0].userToken!!)
+                //users[0].userToken!!
+                apiGroupListInfo.getGroupListInfo(users[0].userToken!!
+                ).enqueue(object : Callback<GroupListInfoJSON> {
+                    override fun onResponse(
+                        call: Call<GroupListInfoJSON>,
+                        response: Response<GroupListInfoJSON>,
+                    ) {
+                        Log.d(ContentValues.TAG, "성공 : ${response.raw()} ${response.message()}")
+                        getGroupManagementActivity(response.body()?.organizationInfoResponseList!!)
+                    }
+
+                    override fun onFailure(call: Call<GroupListInfoJSON>, t: Throwable) {
+                        Log.d(ContentValues.TAG, "실패 : $t")
+                    }
+                })
+            }
+
+
+
             // finish() // 특별한 상황이 아니라면 항상 Activity 를 끝내준다. intent 는 쌓이기 때문.
         }
     }
+
+    private fun getGroupManagementActivity(organizationInfoResponseListObject:Array<GroupInfoJSON> ) {
+        val intent = Intent(this, GroupManagementActivity::class.java)
+        intent.putExtra("organizationInfoResponseListObject",organizationInfoResponseListObject)
+        startActivity(intent)
+    }
+
+
 }
+
 
 data class Category(
     var isSelected: Boolean,
