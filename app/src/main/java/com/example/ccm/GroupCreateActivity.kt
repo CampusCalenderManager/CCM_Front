@@ -34,7 +34,7 @@ class GroupCreateActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG
             ).show()
 
-            // Todo : 그룹 생성 완료 이후 그룹 관리에 추가한 그룹 업데이트 해주기
+            // Todo : 그룹 생성 완료 이후 그룹 관리에 추가한 그룹 업데이트 해주기 Done!!
         }
 
         val backButton = findViewById<ImageButton>(R.id.group_create_back_button)
@@ -100,7 +100,7 @@ class GroupCreateActivity : AppCompatActivity() {
 
     private fun addBackButtonListener(backButton: ImageButton) {
         backButton.setOnClickListener{
-            // Todo : 서버에서 사용자의 그룹 리스트를 받아서 보여주기
+            // Todo : 서버에서 사용자의 그룹 리스트를 받아서 보여주기 Done!!
             val retrofit = Retrofit.Builder()
                 .baseUrl("http://jenkins.argos.or.kr")
                 .addConverterFactory(GsonConverterFactory.create())

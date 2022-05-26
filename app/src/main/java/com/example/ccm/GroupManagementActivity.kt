@@ -27,6 +27,9 @@ class GroupManagementActivity : AppCompatActivity() {
                     GroupCard(
                         organizationInfoResponseListObject[i-1].title,
                         organizationInfoResponseListObject[i-1].description,
+                        organizationInfoResponseListObject[i-1].memberNum,
+                        organizationInfoResponseListObject[i-1].organizationId,
+                        organizationInfoResponseListObject[i-1].presidentName
                     )
                 )
         }

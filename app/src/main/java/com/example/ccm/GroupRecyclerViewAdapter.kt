@@ -30,9 +30,13 @@ class GroupRecyclerViewAdapter(val items : MutableList<GroupCard>) : RecyclerVie
         fun bindItems(item : GroupCard) {
             val cardTitle = itemView.findViewById<TextView>(R.id.group_card_title)
             val cardDescription = itemView.findViewById<TextView>(R.id.group_card_description)
-            val cardCurrentWeek = itemView.findViewById<TextView>(R.id.group_card_current_week)
-            val cardEndWeek = itemView.findViewById<TextView>(R.id.group_card_end_week)
-            val cardProgress = itemView.findViewById<ProgressBar>(R.id.group_card_progressbar)
+//            val cardCurrentWeek = itemView.findViewById<TextView>(R.id.group_card_current_week)
+//            val cardEndWeek = itemView.findViewById<TextView>(R.id.group_card_end_week)
+//            val cardProgress = itemView.findViewById<ProgressBar>(R.id.group_card_progressbar)
+
+            itemView.setOnClickListener{
+
+            }
 
             cardTitle.text = item.groupTitle
             cardDescription.text = item.groupDescription
