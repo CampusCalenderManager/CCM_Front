@@ -34,6 +34,7 @@ class GroupJoinPopup(context: Context) : Dialog(context) {
                 this.dismiss()
             } else {
                 // Todo : 서버에 코드 검증 요청 후, 맞는 코드라면 그룹 관리에 그룹 추가하기
+
                 Toast.makeText(context, groupJoinCode.toString(), Toast.LENGTH_LONG).show()
                 this.dismiss()
             }

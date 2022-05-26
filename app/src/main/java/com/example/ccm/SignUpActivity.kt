@@ -5,20 +5,12 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
-import com.example.ccm.API.ApiSignUp
+import com.example.ccm.API.APISignUp
 import com.example.ccm.API.SignUpJSON
 import com.example.ccm.databinding.ActivitySignUpBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import okhttp3.ResponseBody
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.reflect.Type
 
 class SignUpActivity : AppCompatActivity() {
     lateinit var binding: ActivitySignUpBinding
@@ -51,10 +43,10 @@ class SignUpActivity : AppCompatActivity() {
         signUpPassword: String
     ) {
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://jenkins.argos.or.kr")
+            .baseUrl("http://jenkins.argos.or.kr")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val apiAddSchedule = retrofit.create(ApiSignUp::class.java)
+        val apiAddSchedule = retrofit.create(APISignUp::class.java)
 
         apiAddSchedule.postSignUp(
             SignUpJSON(signUpName, signUpUsername, signUpPassword)

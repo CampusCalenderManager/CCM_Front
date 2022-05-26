@@ -9,7 +9,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ccm.API.AddScheduleJSON
-import com.example.ccm.API.ApiAddSchedule
+import com.example.ccm.API.APIAddSchedule
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -52,10 +52,10 @@ class AddSchedule : AppCompatActivity() {
             setPostIsAlarm()
 
             val retrofit = Retrofit.Builder()
-                .baseUrl("https://jenkins.argos.or.kr")
+                .baseUrl("http://jenkins.argos.or.kr")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-            val apiAddSchedule = retrofit.create(ApiAddSchedule::class.java)
+            val apiAddSchedule = retrofit.create(APIAddSchedule::class.java)
 
             //accesstoken에 ccmApp.prefs.token.toString()
             apiAddSchedule.postAddSchedule("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImV4cCI6MTY3OTM5MDg5MiwibWVtYmVySWQiOjV9.FwNVVxk2JPC3EUNRlI8K6lEyBWF7IWcaxEvr1Yki_5QytUgzwKaOlnYy6g3n-Ot72Cuagv79qVAr56Ht5ErFzQ",

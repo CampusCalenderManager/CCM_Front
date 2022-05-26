@@ -28,6 +28,8 @@ class GroupCreateCodePopup(context: Context) : Dialog(context) {
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         // Todo : 서버에서 그룹 참여 코드를 받아서 팝업내 TextView 에 띄우기
+        val groupJoinCode = findViewById<TextView>(R.id.group_join_code)
+        groupJoinCode.text = GroupCreateActivity().getParticipationCode()
 
         val clipboard = context.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
 
