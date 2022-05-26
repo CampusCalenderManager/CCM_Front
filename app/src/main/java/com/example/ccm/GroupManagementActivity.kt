@@ -13,39 +13,34 @@ class GroupManagementActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_group_management)
+
+        // Todo : 서버에서 사용자의 그룹 리스트를 받아서 보여주기
         val intent = intent
         val organizationInfoResponseListObject: Array<GroupInfoJSON>? = intent.getSerializableExtra("organizationInfoResponseListObject") as Array<GroupInfoJSON>?
-        val items = mutableListOf<GroupCard>()
+        val group = mutableListOf<GroupCard>()
 
+        val organizationInfoResponseListObjectSize = organizationInfoResponseListObject?.size
         Log.e("되나?",organizationInfoResponseListObject?.get(0).toString())
-        // Todo : 서버에서 사용자의 그룹 리스트를 받아서 보여주기
+
+        if (organizationInfoResponseListObjectSize != null) {
+            for (i in 1..organizationInfoResponseListObjectSize.toInt())
+                group.add(
+                    GroupCard(
+                        organizationInfoResponseListObject[i-1].title,
+                        organizationInfoResponseListObject[i-1].description,
+                    )
+                )
+        }
+
         // Todo : 리스트 아이템 클릭시 해당하는 그룹의 상세 페이지 보이기
 
-        items.add(
-            GroupCard(
-                "자료구조(01분반)",
-                "강지훈 교수의 지리는 수업입니다",
-            )
-        )
 
-        items.add(
-            GroupCard(
-                "확률과 통계(01분반)",
-                "조승범 교수의 지리는 수업입니다",
-            )
-        )
 
-        items.add(
-            GroupCard(
-                "자료구조(01분반)",
-                "강지훈 교수의 지리는 수업입니다",
-            )
-        )
 
 
         val groupView = findViewById<RecyclerView>(R.id.group_view)
 
-        val groupViewAdapter = GroupRecyclerViewAdapter(items)
+        val groupViewAdapter = GroupRecyclerViewAdapter(group)
 
         groupView.adapter = groupViewAdapter
 
@@ -65,13 +60,5 @@ class GroupManagementActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        fun setItem(groupTitle: String, groupDescription: String){
-            items.add(
-                GroupCard(
-                    "확률과 통계(01분반)",
-                    "조승범 교수의 지리는 수업입니다",
-                )
-            )
-        }
     }
 }
