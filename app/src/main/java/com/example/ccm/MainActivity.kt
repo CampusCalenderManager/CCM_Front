@@ -144,6 +144,7 @@ class MainActivity : AppCompatActivity() {
         binding.calendarUpdateButton.setOnClickListener {
             // Todo : 버튼 누르면 서버에서 데이터 받아서 표시
             // Todo : 받은 데이터 로컬에 다시 저장
+            isUserLogin = false
         }
 
         binding.calendarBottomGroupJoinButton.setOnClickListener {
