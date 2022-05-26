@@ -20,7 +20,6 @@ class GroupManagementActivity : AppCompatActivity() {
         val group = mutableListOf<GroupCard>()
 
         val organizationInfoResponseListObjectSize = organizationInfoResponseListObject?.size
-        Log.e("되나?",organizationInfoResponseListObject?.get(0).toString())
 
         if (organizationInfoResponseListObjectSize != null) {
             for (i in 1..organizationInfoResponseListObjectSize.toInt())
