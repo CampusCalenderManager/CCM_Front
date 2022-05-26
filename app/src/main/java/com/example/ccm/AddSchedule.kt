@@ -2,115 +2,252 @@ package com.example.ccm
 
 import android.app.AlertDialog
 import android.content.ContentValues.TAG
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.example.ccm.API.AddScheduleJSON
-import com.example.ccm.API.ApiAddSchedule
+import androidx.core.graphics.toColor
+import com.drunkenboys.ckscalendar.data.CalendarScheduleObject
+import com.drunkenboys.ckscalendar.data.ScheduleColorType
+import com.example.ccm.API.*
+import com.example.ccm.CCMApp.Companion.userLocalDB
+import com.example.ccm.LocalDB.User
+import com.example.ccm.databinding.ActivityAddScheduleBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
-
-var postTitle = ""
-var postContent = ""
 var postStartDate = ""
 var postEndDate = ""
 var postStartAlarm = ""
-var postIsShared = ""
-var postIsAlarm = ""
-var postColor = ""
-var postOrganizationId = ""
+var categoryList = mutableListOf<Category>()
 
 class AddSchedule : AppCompatActivity() {
+    lateinit var binding: ActivityAddScheduleBinding
+    lateinit var retrofit: Retrofit
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_schedule)
+        binding = ActivityAddScheduleBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        retrofit = Retrofit.Builder()
+            .baseUrl("http://jenkins.argos.or.kr")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
 
         setDatePicker()
         setAlarmSpinner()
-        setGropeSpinner()
+        setGropeSpinner() // 그룹 리스트 생성
 
-        val saveButton = findViewById<Button>(R.id.add_schedule_save_button)
-        Log.e("clicked", "clicked")
+        val updatedSchedule = mutableListOf<CalendarScheduleObject>()
 
-        saveButton.setOnClickListener {
-
-
+        binding.addScheduleSaveButton.setOnClickListener {
             setPostStartAlarm()
-            setPostTitle()
-            setPostContent()
-            setPostIsShared()
-            setPostIsAlarm()
+            val postTitle = binding.addScheduleTitle.text.toString()
+            val postContent = binding.addScheduleContent.text.toString()
+            val postIsShared = binding.addScheduleIsShared.showText.toString().toBoolean()
+            val postIsAlarm = binding.addScheduleIsAlarm.showText.toString().toBoolean()
+            var postOrganizationID: String = ""
+            var categoryColor: String = ""
 
-            val retrofit = Retrofit.Builder()
-                .baseUrl("https://jenkins.argos.or.kr")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
+            categoryList.forEach { category ->
+                if (category.name == binding.groupSpinner.selectedItem.toString()) {
+                    postOrganizationID = category.categoryId!!
+                    categoryColor = category.color!!
+                }
+            }
+
             val apiAddSchedule = retrofit.create(ApiAddSchedule::class.java)
 
-            //accesstoken에 ccmApp.prefs.token.toString()
-            apiAddSchedule.postAddSchedule("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImV4cCI6MTY3OTM5MDg5MiwibWVtYmVySWQiOjV9.FwNVVxk2JPC3EUNRlI8K6lEyBWF7IWcaxEvr1Yki_5QytUgzwKaOlnYy6g3n-Ot72Cuagv79qVAr56Ht5ErFzQ",
-                AddScheduleJSON(
-                    postTitle,
-                    postContent,
-                    postStartDate,
-                    postEndDate,
-                    postStartAlarm,
-                    postIsShared,
-                    postIsAlarm,
-                    "#ffffff",
-                    "123"
+            CoroutineScope(Dispatchers.Main).launch {
+                val users = CoroutineScope(Dispatchers.IO).async {
+                    userLocalDB.userDao().getAll()
+                }.await()
 
+                CoroutineScope(Dispatchers.IO).async {
+                    userLocalDB.userDao().update(users[0])
+                }.await()
+
+                users[0].userSchedule!!.forEach { schedule ->
+                    updatedSchedule.add(schedule)
+                }
+
+                updatedSchedule.add(
+                    CalendarScheduleObject(
+                        id = postOrganizationID.toInt(),
+                        color = Color.parseColor(categoryColor),
+                        text = postTitle,
+                        startDate = LocalDateTime.parse(postStartDate + "Z", DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+                        endDate = LocalDateTime.parse(postEndDate + "Z", DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+                        isHoliday = false
+                    )
                 )
-            ).enqueue(object : Callback<AddScheduleJSON> {
-                override fun onResponse(
-                    call: Call<AddScheduleJSON>,
-                    response: Response<AddScheduleJSON>,
-                ) {
-                    Log.d(TAG, "성공 : ${response.raw()} ${response.message()}")
+
+                users[0].userSchedule = updatedSchedule
+
+                // 로컬에 스케줄 저장
+                CoroutineScope(Dispatchers.IO).async {
+                    userLocalDB.userDao().update(users[0])
                 }
 
-                override fun onFailure(call: Call<AddScheduleJSON>, t: Throwable) {
-                    Log.d(TAG, "실패 : $t")
+                // 개인 일정이 아니라면 서버에 데이터 POST
+                if (postOrganizationID.toInt() > -1) {
+                    Log.e("??", postOrganizationID)
+                    apiAddSchedule.postAddSchedule(users[0].userToken!!,
+                        AddScheduleJSON(
+                            title = postTitle,
+                            content = postContent,
+                            startDate = postStartDate,
+                            endDate = postEndDate,
+                            startAlarm = postStartAlarm,
+                            isShared = postIsShared,
+                            isAlarm = postIsAlarm,
+                            organizationId = postOrganizationID.toLong()
+                        )
+                    ).enqueue(object : Callback<GetScheduleJSON> {
+                        override fun onResponse(
+                            call: Call<GetScheduleJSON>,
+                            response: Response<GetScheduleJSON>,
+                        ) {
+                            Log.d(TAG, "성공 : ${response.code()} ${response.raw()}")
+                        }
+
+                        override fun onFailure(call: Call<GetScheduleJSON>, t: Throwable) {
+                            Log.d(TAG, "실패 : $t")
+                        }
+                    })
                 }
-            })
+            }
         }
-
-
     }
 
-    private fun setPostIsAlarm() {
-        val isAlarm = findViewById<Switch>(R.id.add_schedule_isAlarm)
-        postIsAlarm = isAlarm.showText.toString()
+    // 그룹 목록 세팅
+    fun setGropeSpinner() {
+        val groupList = mutableListOf<String>() // 스피너에 들어갈 그룹 리스트
+
+        val groupAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            groupList
+        )
+
+        val groupSpinner = binding.groupSpinner
+        groupSpinner.adapter = groupAdapter
+
+        // 로컬 DB 에서 그룹 리스트 받아와서 넣기
+        CoroutineScope(Dispatchers.Main).launch {
+            val users = CoroutineScope(Dispatchers.IO).async {
+                userLocalDB.userDao().getAll()
+            }.await()
+
+            // 로컬의 카테고리 넣어주기
+            users[0].userCategory!!.forEach { category ->
+                if (category.name == "개인") {
+                    groupList.add(category.name)
+                    categoryList.add(category)
+                }
+            }
+
+            val apiGetMyOrganization = retrofit.create(APIGetMyOrganization::class.java)
+            CoroutineScope(Dispatchers.IO).async {
+                apiGetMyOrganization.getMyOrganization(users[0].userToken!!)
+                    .enqueue(object : Callback<MyOrganizationJSON> {
+                        override fun onResponse(
+                            call: Call<MyOrganizationJSON>,
+                            response: Response<MyOrganizationJSON>,
+                        ) {
+                            val serverGroupList = response.body()!!.organizationInfoResponseList
+
+                            serverGroupList.forEach { organizationInfo ->
+                                groupList.add(organizationInfo.title)
+                                categoryList.add(
+                                    Category(
+                                        false,
+                                        categoryId = organizationInfo.organizationId.toString(),
+                                        color = organizationInfo.color,
+                                        name = organizationInfo.title
+                                    )
+                                )
+                                users[0].userCategory = categoryList
+                            }
+                        }
+
+                        override fun onFailure(call: Call<MyOrganizationJSON>, t: Throwable) {
+                            Log.d(TAG, "실패 : $t")
+                            Toast.makeText(
+                                binding.root.context,
+                                "요청이 잘못되었어요",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    })
+            }.await()
+
+            groupAdapter.notifyDataSetChanged()
+        }
     }
 
-    private fun setPostIsShared() {
-        val isShared = findViewById<Switch>(R.id.add_schedule_isShared)
-        postIsShared = isShared.showText.toString()
+    // 날짜 피커 설정
+    fun setDatePicker() {
+        val startDate = binding.startDate
+        val finalDate = binding.finalDate
+
+        val dateFormat = SimpleDateFormat("dd", Locale.KOREA)
+        val monthFormat = SimpleDateFormat("MM", Locale.KOREA)
+        val yearFormat = SimpleDateFormat("yyyy", Locale.KOREA)
+        val hourFormat = SimpleDateFormat("HH", Locale.KOREA)
+        val minuteFormat = SimpleDateFormat("mm", Locale.KOREA)
+
+        val now: Long = System.currentTimeMillis() + 9 * 60 * 60 * 1000
+
+        val currentYear = yearFormat.format(now)
+        val currentMonth = monthFormat.format(now)
+        val currentDate = dateFormat.format(now).toInt()
+        val currentHour = hourFormat.format(now).toInt()
+        val currentMinute = minuteFormat.format(now).toInt()
+
+        finalDate.text =
+            "${currentYear}년 ${currentMonth}월 ${currentDate}일 ${currentHour}시 ${currentMinute}분"
+        startDate.text =
+            "${currentYear}년 ${currentMonth}월 ${currentDate}일 ${currentHour}시 ${currentMinute}분"
+
+        postStartDate = "${currentYear}-${
+            String.format("%02d",
+                currentMonth.toInt())
+        }-${currentDate}T${
+            String.format("%02d",
+                currentHour)
+        }:${
+            String.format("%02d",currentMinute)
+        }:00"
+
+        postEndDate = postStartDate
+
+        setStartDate(startDate)
+        setFinalDate(finalDate)
     }
 
-    private fun setPostContent() {
-        val content = findViewById<EditText>(R.id.add_schedule_content)
-        postContent = content.text.toString()
-    }
-
-    private fun setPostTitle() {
-        val title = findViewById<EditText>(R.id.add_schedule_title)
-        postTitle = title.text.toString()
-    }
-
+    // 종료 날짜 설정
     private fun setFinalDate(finalDate: TextView) {
         finalDate.setOnClickListener {
-
             val dialog = AlertDialog.Builder(this).create()
             val edialog: LayoutInflater = LayoutInflater.from(this)
             val mView: View = edialog.inflate(R.layout.activity_date_picker, null)
@@ -183,7 +320,7 @@ class AddSchedule : AppCompatActivity() {
         }
     }
 
-
+    // 시작 날짜 설정
     fun setStartDate(startDate: TextView) {
         startDate.setOnClickListener {
 
@@ -253,67 +390,10 @@ class AddSchedule : AppCompatActivity() {
             dialog.setView(mView)
             dialog.create()
             dialog.show()
-
-
         }
-
     }
 
-    fun setDatePicker() {
-        val startDate = findViewById<TextView>(com.example.ccm.R.id.startDate) as TextView
-        val finalDate = findViewById<TextView>(com.example.ccm.R.id.finalDate) as TextView
-
-        val dateFormat = SimpleDateFormat("dd", Locale.KOREA)
-        val monthFormat = SimpleDateFormat("MM", Locale.KOREA)
-        val yearFormat = SimpleDateFormat("yyyy", Locale.KOREA)
-        val hourFormat = SimpleDateFormat("HH", Locale.KOREA)
-        val minuteFormat = SimpleDateFormat("mm", Locale.KOREA)
-
-        val now: Long = System.currentTimeMillis() + 9 * 60 * 60 * 1000
-
-        val currentYear = yearFormat.format(now)
-        val currentMonth = monthFormat.format(now)
-        val currentDate = dateFormat.format(now).toInt()
-        val currentHour = hourFormat.format(now).toInt()
-        val currentMinute = minuteFormat.format(now)
-
-
-
-        finalDate.text =
-            "${currentYear}년 ${currentMonth}월 ${currentDate}일 ${currentHour}시 ${currentMinute}분"
-        startDate.text =
-            "${currentYear}년 ${currentMonth}월 ${currentDate}일 ${currentHour}시 ${currentMinute}분"
-
-        postStartDate = "${currentYear}-${
-            String.format("%02d",
-                currentMonth.toInt())
-        }-${currentDate}T${
-            String.format("%02d",
-                currentHour)
-        }:${(currentMinute.toInt())}:00"
-        setStartDate(startDate)
-        setFinalDate(finalDate)
-
-    }
-
-    // Todo : 그룹 받아와서 array에 넣고 organizationid과 같이 api요청
-    fun setGropeSpinner() {
-        val groupArray = arrayOf("자료구조(02분반)",
-            "상남자 스터디",
-            "기초프로젝트랩(01분반)",
-            "컴퓨터프로그래밍3(03분반)",
-            "확률및통계",
-            "논리회로",
-            "계산이론")
-
-        val groupeAdapter =
-            ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, groupArray)
-
-        val groupSpinner: Spinner = findViewById(R.id.groupSpinner)
-        groupSpinner.adapter = groupeAdapter
-    }
-
-
+    // 알람 목록 세팅
     fun setAlarmSpinner() {
         val alarmArray = arrayOf("15분 전", "30분 전", "1시간 전", "3시간 전", "6시간 전", "12시간 전", "하루 전")
         val alarmSpinner: Spinner = findViewById(R.id.alarmSpinner)
@@ -323,7 +403,7 @@ class AddSchedule : AppCompatActivity() {
         alarmSpinner.adapter = alarmAdapter
     }
 
-
+    // 시작 시간 피커 설정
     private fun setStartTimePicker(startDate: TextView, year: Int, month: Int, date: Int) {
         val currentTime = Calendar.getInstance()
         val dialog = AlertDialog.Builder(this).create()
@@ -383,8 +463,7 @@ class AddSchedule : AppCompatActivity() {
                     String.format("%02d",
                         date)
                 }일 ${String.format("%02d", hour.value)}시 ${
-                    String.format("%02d",
-                        minute.value)
+                    String.format("%02d",minute.value)
                 }분")
             dialog.dismiss()
             dialog.cancel()
@@ -396,11 +475,9 @@ class AddSchedule : AppCompatActivity() {
         dialog.setView(mView)
         dialog.create()
         dialog.show()
-
-
     }
 
-
+    // 마지막 시간 피커 설정
     private fun setFinalTimePicker(finalDate: TextView, year: Int, month: Int, date: Int) {
         val currentTime = Calendar.getInstance()
         val dialog = AlertDialog.Builder(this).create()
@@ -468,18 +545,17 @@ class AddSchedule : AppCompatActivity() {
         postEndDate =
             "${year}-${String.format("%02d", month)}-${date}T${hour.value}:${minute.value}:00"
 
-
         dialog.setView(mView)
         dialog.create()
         dialog.show()
 
-
     }
 
+    // 알람 설정
     fun setPostStartAlarm() {
         val alarmSpinner: Spinner = findViewById(R.id.alarmSpinner)
 
-        val formatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-d'T'HH:mm")
+        val formatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-d'T'HH:mm:ss")
         val date: Date = formatter.parse(postStartDate)
 
         Log.e(TAG, date.time.toString())
@@ -506,10 +582,7 @@ class AddSchedule : AppCompatActivity() {
                 postStartAlarm = formatter.format(date.time - 24 * 60 * 60 * 1000)
             }
         }
-
     }
-
-
 }
 
 

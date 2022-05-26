@@ -15,10 +15,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.drunkenboys.ckscalendar.data.CalendarScheduleObject
+import com.drunkenboys.ckscalendar.data.ScheduleColorType
 import com.example.ccm.CCMApp.Companion.userLocalDB
 import com.example.ccm.LocalDB.User
 import com.example.ccm.databinding.ActivityMainBinding
+import com.squareup.moshi.JsonClass
 import kotlinx.coroutines.*
+import java.time.LocalDateTime
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
@@ -48,9 +51,9 @@ class MainActivity : AppCompatActivity() {
             if (users.isEmpty()) {
                 // 앱을 처음 사용한다면 user 라는 이름으로 로컬 db에 생성
                 // 토큰이 없으므로 일정을 공유하지도 그룹에 참여하지도 못한다.
-                val categoryListBase = listOf<Category>(
-                    Category(true,"통합"),
-                    Category(false,"개인"),
+                val categoryListBase = listOf(
+                    Category(true, "-2", null, "통합"),
+                    Category(false, "-1", ScheduleColorType.BLUE.color.toString(), "개인"),
                 )
 
                 CoroutineScope(Dispatchers.IO).launch {
@@ -63,14 +66,22 @@ class MainActivity : AppCompatActivity() {
                         )
                     )
                 }
+
                 categoryListBase.forEach { category ->
                     categoryItems.add(category)
                 }
+
+                binding.calendarHeaderUserIcon.text = "user"
+
                 binding.calendarCategoryRv.adapter!!.notifyDataSetChanged()
             } else {
                 // 앱을 실행이 처음이 아니라면 우선 로컬 db 에서 데이터를 가져온다.
+
+                categoryItems.add(Category(true, "-2", null, "통합"))
                 users[0].userCategory?.forEach { category ->
-                    categoryItems.add(category)
+                    if (category.name != "통합") {
+                        categoryItems.add(category)
+                    }
                 }
                 binding.calendarCategoryRv.adapter!!.notifyDataSetChanged()
 
@@ -104,12 +115,16 @@ class MainActivity : AppCompatActivity() {
 
                 binding.calendarCategoryRv.adapter!!.notifyDataSetChanged()
 
-                if (position == 0) {
+                val categoryId = categoryItems[position].categoryId
+
+                if (categoryId == "-2") {
+                    // 카테고리가 통합일 경우
                     binding.calendarView.setSchedules(scheduleItems)
                 } else {
                     val scheduleList = mutableListOf<CalendarScheduleObject>()
                     scheduleItems.forEach { s ->
-                        if (s.id == position) {
+                        // 스케줄의 아이디는 organizationID와 동일하다
+                        if (s.id == categoryId!!.toInt()) {
                             scheduleList.add(s)
                         }
                     }
@@ -145,6 +160,18 @@ class MainActivity : AppCompatActivity() {
             // Todo : 버튼 누르면 서버에서 데이터 받아서 표시
             // Todo : 받은 데이터 로컬에 다시 저장
             isUserLogin = false
+            CoroutineScope(Dispatchers.Main).launch {
+                // 먼저 유저 목록을 불러온다.
+                // 사용자는 하나이므로 리스트의 첫번째를 사용하면 된다.
+                val users = CoroutineScope(Dispatchers.IO).async {
+                    userLocalDB.userDao().getAll()
+                }.await()
+
+
+                CoroutineScope(Dispatchers.IO).async {
+                    userLocalDB.userDao().delete(users[0])
+                }.await()
+            }
         }
 
         binding.calendarBottomGroupJoinButton.setOnClickListener {
@@ -166,9 +193,12 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
+@JsonClass(generateAdapter = true)
 data class Category(
     var isSelected: Boolean,
-    val name: String
+    var categoryId: String?=null,
+    var color: String?=null,
+    val name: String?=null
 )
 
 class CalendarCategoryRVAdapter (

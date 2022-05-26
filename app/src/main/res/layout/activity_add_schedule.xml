@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
+<layout>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -34,7 +34,7 @@
             app:layout_constraintHorizontal_bias="0.085"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.230"></ImageButton>
+            app:layout_constraintVertical_bias="0.230"/>
 
         <TextView
             android:id="@+id/textView"
@@ -49,7 +49,7 @@
             app:layout_constraintHorizontal_bias="0.314"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.2"></TextView>
+            app:layout_constraintVertical_bias="0.2"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -92,7 +92,7 @@
                     app:layout_constraintHorizontal_bias="0.093"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.224"></TextView>
+                    app:layout_constraintVertical_bias="0.224"/>
 
                 <EditText
                     android:id="@+id/add_schedule_title"
@@ -131,7 +131,7 @@
                     app:layout_constraintHorizontal_bias="0.087"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.224"></TextView>
+                    app:layout_constraintVertical_bias="0.224"/>
 
                 <EditText
                     android:id="@+id/add_schedule_content"
@@ -174,7 +174,7 @@
                     app:layout_constraintHorizontal_bias="0.093"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.224"></TextView>
+                    app:layout_constraintVertical_bias="0.224"/>
 
                 <Switch
                     android:layout_width="wrap_content"
@@ -231,7 +231,7 @@
                     app:layout_constraintHorizontal_bias="0.093"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.129"></TextView>
+                    app:layout_constraintVertical_bias="0.129"/>
 
                 <TextView
                     android:id="@+id/startDate"
@@ -301,7 +301,7 @@
                     app:layout_constraintHorizontal_bias="0.093"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.204"></TextView>
+                    app:layout_constraintVertical_bias="0.204"/>
 
                 <Switch
                     android:id="@+id/add_schedule_isAlarm"
@@ -381,3 +381,4 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -51,7 +51,7 @@ class SignUpActivity : AppCompatActivity() {
         signUpPassword: String
     ) {
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://jenkins.argos.or.kr")
+            .baseUrl("http://jenkins.argos.or.kr")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val apiAddSchedule = retrofit.create(ApiSignUp::class.java)
