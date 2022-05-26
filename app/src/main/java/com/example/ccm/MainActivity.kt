@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -82,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
                 // 토큰의 존재 여부를 통해 로그인 되었는지를 판단한다.
                 // Todo : 만약 토큰이 만료되었다면 다른 화면으로 가기 전에 로그인으로 돌려보내도록 하자.
-                isUserLogin = users[0].userToken == null
+                isUserLogin = users[0].userToken != null
             }
         }
 
@@ -131,9 +132,13 @@ class MainActivity : AppCompatActivity() {
         binding.calendarView.setSchedules(scheduleItems)
 
         binding.calendarHeaderUserIcon.setOnClickListener {
-            val intent = Intent(this, SignInActivity::class.java)
-            startActivity(intent)
-            // finish() // 특별한 상황이 아니라면 항상 Activity 를 끝내준다.
+            if (isUserLogin) {
+                Toast.makeText(binding.root.context, "이미 로그인 되었어요!", Toast.LENGTH_LONG).show()
+            } else {
+                val intent = Intent(this, SignInActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
         }
 
         binding.calendarUpdateButton.setOnClickListener {

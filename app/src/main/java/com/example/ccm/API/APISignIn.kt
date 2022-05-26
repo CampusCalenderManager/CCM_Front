@@ -10,5 +10,5 @@ interface APISignIn {
     @POST("/login")
     fun postSignIn (
         @Body body: SignInJSON
-    ): Call<Void>
+    ): Call<LoginUserDataJSON>
 }
