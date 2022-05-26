@@ -49,7 +49,7 @@ class SignInActivity : AppCompatActivity() {
         password: String
     ) {
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://jenkins.argos.or.kr")
+            .baseUrl("http://jenkins.argos.or.kr")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
