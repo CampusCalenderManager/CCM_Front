@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
 
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="320dp"
     android:layout_height="230dp"
     android:background="@drawable/white_back_border_radius_30dp"
@@ -14,13 +14,13 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
 
+        android:id="@+id/constraintLayout6"
         android:layout_width="320dp"
         android:layout_height="230dp"
         android:background="@drawable/white_back_border_radius_30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintStart_toStartOf="parent">
 
 
         <NumberPicker
@@ -60,7 +60,7 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <Button
-                android:id="@+id/cancel_button_datepicker"
+                android:id="@+id/cancel_button_timePicker"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_gravity="bottom"
@@ -76,7 +76,7 @@
             </Button>
 
             <Button
-                android:id="@+id/save_button_datepicker"
+                android:id="@+id/save_button_timePicker"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_gravity="bottom"
@@ -95,90 +95,5 @@
 
             </Button>
         </LinearLayout>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-
-    <!--    android:layout_width="match_parent"-->
-
-    <!--    android:layout_height="match_parent"-->
-
-    <!--    android:orientation="vertical">-->
-
-
-    <!--    <DatePicker-->
-
-    <!--        android:id="@+id/vDatePicker"-->
-
-    <!--        android:layout_width="wrap_content"-->
-
-    <!--        android:layout_height="wrap_content"-->
-
-    <!--        android:calendarViewShown="false"-->
-
-    <!--        android:datePickerMode="spinner" />-->
-
-
-    <!--    <Button-->
-
-    <!--        android:id="@+id/vDateEnter"-->
-
-    <!--        android:layout_width="match_parent"-->
-
-    <!--        android:layout_height="wrap_content"-->
-
-    <!--        android:onClick="mOnClick"-->
-
-    <!--        android:text="확인" />-->
-
-    <!--</LinearLayout>-->
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <Button
-            android:id="@+id/cancel_button_timePicker"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_gravity="bottom"
-            android:layout_margin="0dp"
-            android:layout_weight="1"
-            android:background="#FFFFFF"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:padding="0dp"
-            android:text="취소"
-            android:textSize="20sp">
-
-        </Button>
-
-        <Button
-            android:id="@+id/save_button_timePicker"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_gravity="bottom"
-            android:layout_margin="0dp"
-            android:layout_marginStart="165dp"
-            android:layout_weight="1"
-            android:background="#C5CAFF"
-            android:insetTop="0dp"
-
-
-            android:insetBottom="0dp"
-            android:padding="0dp"
-            android:text="완료"
-            android:textColor="@color/white"
-            android:textSize="20sp">
-
-        </Button>
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
