@@ -25,8 +25,6 @@ class GroupCreateActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_group_create)
-
-
         val popupOnCancelListener = DialogInterface.OnCancelListener {
             Toast.makeText(
                 this,
@@ -135,6 +133,7 @@ class GroupCreateActivity : AppCompatActivity() {
         val intent = Intent(this, GroupManagementActivity::class.java)
         intent.putExtra("organizationInfoResponseListObject",organizationInfoResponseListObject)
         startActivity(intent)
+        finish()
     }
 
 

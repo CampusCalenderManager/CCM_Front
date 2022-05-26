@@ -60,6 +60,7 @@ class GroupManagementActivity : AppCompatActivity() {
         groupCreateButton.setOnClickListener {
             val intent = Intent(this, GroupCreateActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
     }
