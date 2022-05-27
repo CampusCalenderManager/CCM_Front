@@ -22,6 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 var participationCode = ""
 
 class GroupCreateActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_group_create)
@@ -38,9 +39,10 @@ class GroupCreateActivity : AppCompatActivity() {
         }
 
         val backButton = findViewById<ImageButton>(R.id.group_create_back_button)
+        val groupCreateCancelButton = findViewById<Button>(R.id.group_create_cancel_button)
 
+        addCancelButtonListener(groupCreateCancelButton)
         addBackButtonListener(backButton)
-
         val groupCreateButton = findViewById<Button>(R.id.group_create_button)
         groupCreateButton.setOnClickListener {
 
@@ -96,7 +98,42 @@ class GroupCreateActivity : AppCompatActivity() {
 
 
         }
+
     }
+
+    private fun addCancelButtonListener(cancelButton: Button) {
+        cancelButton.setOnClickListener{
+            // Todo : 서버에서 사용자의 그룹 리스트를 받아서 보여주기
+            val retrofit = Retrofit.Builder()
+                .baseUrl("http://jenkins.argos.or.kr")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+            val apiGroupListInfo = retrofit.create(APIGroupListInfo::class.java)
+
+            CoroutineScope(Dispatchers.Main).launch {
+                val users = CoroutineScope(Dispatchers.IO).async {
+                    CCMApp.userLocalDB.userDao().getAll()
+                }.await()
+//                Log.e("token", users[0].userToken!!)
+                //users[0].userToken!!
+                apiGroupListInfo.getGroupListInfo(users[0].userToken!!
+                ).enqueue(object : Callback<GroupListInfoJSON> {
+                    override fun onResponse(
+                        call: Call<GroupListInfoJSON>,
+                        response: Response<GroupListInfoJSON>,
+                    ) {
+                        Log.d(ContentValues.TAG, "성공 : ${response.raw()} ${response.message()}")
+                        getGroupManagementActivity(response.body()?.organizationInfoResponseList!!)
+                    }
+
+                    override fun onFailure(call: Call<GroupListInfoJSON>, t: Throwable) {
+                        Log.d(ContentValues.TAG, "실패 : $t")
+                    }
+                })
+            }
+        }
+    }
+
 
     private fun addBackButtonListener(backButton: ImageButton) {
         backButton.setOnClickListener{
@@ -131,6 +168,35 @@ class GroupCreateActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://jenkins.argos.or.kr")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val apiGroupListInfo = retrofit.create(APIGroupListInfo::class.java)
+
+        CoroutineScope(Dispatchers.Main).launch {
+            val users = CoroutineScope(Dispatchers.IO).async {
+                CCMApp.userLocalDB.userDao().getAll()
+            }.await()
+//                Log.e("token", users[0].userToken!!)
+            //users[0].userToken!!
+            apiGroupListInfo.getGroupListInfo(users[0].userToken!!
+            ).enqueue(object : Callback<GroupListInfoJSON> {
+                override fun onResponse(
+                    call: Call<GroupListInfoJSON>,
+                    response: Response<GroupListInfoJSON>,
+                ) {
+                    Log.d(ContentValues.TAG, "성공 : ${response.raw()} ${response.message()}")
+                    getGroupManagementActivity(response.body()?.organizationInfoResponseList!!)
+                }
+
+                override fun onFailure(call: Call<GroupListInfoJSON>, t: Throwable) {
+                    Log.d(ContentValues.TAG, "실패 : $t")
+                }
+            })
+        }
+    }
     private fun getGroupManagementActivity(organizationInfoResponseListObject:Array<GroupInfoJSON> ) {
         val intent = Intent(this, GroupManagementActivity::class.java)
         intent.putExtra("organizationInfoResponseListObject",organizationInfoResponseListObject)

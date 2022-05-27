@@ -193,7 +193,7 @@ class MainActivity : AppCompatActivity() {
         binding.calendarBottomAddScheduleButton.setOnClickListener {
             val intent = Intent(this, AddSchedule::class.java)
             startActivity(intent)
-            // finish() // 특별한 상황이 아니라면 항상 Activity 를 끝내준다.
+            finish() // 특별한 상황이 아니라면 항상 Activity 를 끝내준다.
         }
         binding.footerBottomGroupManagementButton.setOnClickListener {
 
@@ -237,6 +237,7 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, GroupManagementActivity::class.java)
         intent.putExtra("organizationInfoResponseListObject",organizationInfoResponseListObject)
         startActivity(intent)
+        finish()
     }
 
 
