@@ -120,10 +120,7 @@ class AddSchedule : AppCompatActivity() {
                 users[0].userSchedule = updatedSchedule
 
                 // 로컬 카테고리 업데이트
-                Log.e("beforeUpdate category", users[0].userCategory.toString())
-                Log.e("afterUpdate category", categoryList.toString())
                 users[0].userCategory = categoryList
-                Log.e("update category", users[0].userCategory.toString())
 
                 // 업데이트 내역 로컬 DB 에 저장
                 CoroutineScope(Dispatchers.IO).async {
@@ -199,17 +196,12 @@ class AddSchedule : AppCompatActivity() {
             }.await()
 
             // 로컬의 카테고리 넣어주기
-
-            Log.e("before init categoryList", users[0].userCategory.toString())
-
             users[0].userCategory!!.forEach { category ->
                 if (category.name == "개인") {
                     groupList.add(category.name)
                     categoryList.add(category)
                 }
             }
-
-            Log.e("init CategoryList", categoryList.toString())
 
             CoroutineScope(Dispatchers.IO).async {
                 val apiGetMyOrganization = retrofit.create(APIGetMyOrganization::class.java)
@@ -220,7 +212,6 @@ class AddSchedule : AppCompatActivity() {
                             response: Response<MyOrganizationJSON>,
                         ) {
                             val serverGroupList = response.body()!!.organizationInfoResponseList
-                            Log.e("serverGroupList", serverGroupList.toString())
                             serverGroupList.forEach { organizationInfo ->
                                 groupList.add(organizationInfo.title)
                                 categoryList.add(
@@ -236,7 +227,7 @@ class AddSchedule : AppCompatActivity() {
                         }
 
                         override fun onFailure(call: Call<MyOrganizationJSON>, t: Throwable) {
-                            Log.d(TAG, "실패 : $t")
+                            Log.e(TAG, "실패 : $t")
                             Toast.makeText(
                                 binding.root.context,
                                 "요청이 잘못되었어요",
@@ -274,7 +265,7 @@ class AddSchedule : AppCompatActivity() {
 
         postStartDate = "${currentYear}-${
             String.format("%02d", currentMonth.toInt())
-        }-${currentDate}T${
+        }-${String.format("%02d", currentDate)}T${
             String.format("%02d",currentHour)
         }:${
             String.format("%02d",currentMinute)
@@ -591,7 +582,7 @@ class AddSchedule : AppCompatActivity() {
 
         postEndDate = "${year}-${
             String.format("%02d", month)
-        }-${date}T${
+        }-${String.format("%02d", date)}T${
             String.format("%02d",hour.value)
         }:${
             String.format("%02d",minute.value)
@@ -609,8 +600,6 @@ class AddSchedule : AppCompatActivity() {
 
         val formatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-d'T'HH:mm:ss")
         val date: Date = formatter.parse(postStartDate)
-
-        Log.e(TAG, date.time.toString())
         when (alarmSpinner.selectedItemId.toInt()) {
             0 -> {
                 postStartAlarm = formatter.format(date.time - 15 * 60 * 1000)//15분전

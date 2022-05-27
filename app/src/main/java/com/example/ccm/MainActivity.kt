@@ -17,11 +17,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.drunkenboys.ckscalendar.data.CalendarScheduleObject
 import com.drunkenboys.ckscalendar.data.ScheduleColorType
+import com.example.ccm.API.APIGroupListInfo
+import com.example.ccm.API.GroupInfoJSON
+import com.example.ccm.API.GroupListInfoJSON
 import com.example.ccm.CCMApp.Companion.userLocalDB
 import com.example.ccm.LocalDB.User
 import com.example.ccm.databinding.ActivityMainBinding
 import com.squareup.moshi.JsonClass
 import kotlinx.coroutines.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.time.LocalDateTime
 
 class MainActivity : AppCompatActivity() {
