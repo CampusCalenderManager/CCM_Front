@@ -58,8 +58,6 @@ class GroupJoinPopup(context: Context) : Dialog(context) {
                     val users = CoroutineScope(Dispatchers.IO).async {
                         CCMApp.userLocalDB.userDao().getAll()
                     }.await()
-//                Log.e("token", users[0].userToken!!)
-                    //users[0].userToken!!
                     apiJoinGroup.postJoinGroup(users[0].userToken!!,
                         JoinGroupJSON(
                             groupJoinCode.toString()
@@ -70,19 +68,14 @@ class GroupJoinPopup(context: Context) : Dialog(context) {
                             response: Response<Void>,
                         ) {
                             Log.d(ContentValues.TAG, "성공 : ${response.raw()} ${response.message()}")
+                            dismiss()
                         }
 
-
-
                         override fun onFailure(call: Call<Void>, t: Throwable) {
-                            Log.d(ContentValues.TAG, "실패 : $t")
+                            Log.e(ContentValues.TAG, "실패 : $t")
                         }
                     })
                 }
-
-
-                Toast.makeText(context, groupJoinCode.toString(), Toast.LENGTH_LONG).show()
-                this.dismiss()
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.example.ccm
 
 import android.content.ContentValues
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
@@ -85,7 +86,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 // 앱을 실행이 처음이 아니라면 우선 로컬 db 에서 데이터를 가져온다.
                 categoryItems.add(Category(true, "-2", null, "통합", users[0].username))
-                users[0].userCategory?.forEach { category ->
+                users[0].userCategory!!.forEach { category ->
                     if (category.name != "통합") {
                         if (category.name == "개인") {
                             categoryItems.add(
@@ -103,12 +104,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                binding.calendarCategoryRv.adapter!!.notifyDataSetChanged() // 오프라인일 경우를 대비
-
                 users[0].userSchedule?.forEach { schedule ->
                     scheduleItems.add(schedule)
                 }
-                binding.calendarView.setSchedules(scheduleItems)
+
+                updateViewWithCategory(categoryItems[0])
 
                 binding.calendarHeaderUserIcon.text = users[0].username
 
@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (isUserLogin) {
-                updateUserCategory(users[0].userToken!!)
+                updateUserCategoryAndSchedule(users[0].userToken!!)
 
                 // 서버로부터 업데이트 된 내용들을 로컬이랑 맞춘다.
                 users[0].userCategory = categoryItems
@@ -134,38 +134,7 @@ class MainActivity : AppCompatActivity() {
         // 특정 카테고리 클릭시, 그에 맞는 일정 보여주기
         adapter.itemClick = object : CalendarCategoryRVAdapter.ItemClick {
             override fun onClick(view: View, position: Int) {
-                categoryItems.forEach { c ->
-                    c.isSelected = c.name == categoryItems[position].name
-                }
-
-                binding.calendarCategoryRv.adapter!!.notifyDataSetChanged()
-
-                // 로그인 되어있을 경우만 서버로부터 데이터 받아오기
-                if (isUserLogin) {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        val users = CoroutineScope(Dispatchers.IO).async {
-                            userLocalDB.userDao().getAll()
-                        }.await()
-
-                        updateUserSchedule(users[0].userToken!!)
-                    }
-                }
-
-                val categoryId = categoryItems[position].categoryId
-
-                if (categoryId == "-2") {
-                    // 카테고리가 통합일 경우
-                    binding.calendarView.setSchedules(scheduleItems)
-                } else {
-                    val scheduleList = mutableListOf<CalendarScheduleObject>()
-                    scheduleItems.forEach { s ->
-                        // 스케줄의 아이디는 organizationID와 동일하다
-                        if (s.id == categoryId!!.toInt()) {
-                            scheduleList.add(s)
-                        }
-                    }
-                    binding.calendarView.setSchedules(scheduleList)
-                }
+                updateViewWithCategory(categoryItems[position])
             }
         }
 
@@ -200,8 +169,7 @@ class MainActivity : AppCompatActivity() {
                     }.await()
 
                     // 카테고리 & 스케줄 업데이트
-                    updateUserCategory(users[0].userToken!!)
-                    updateUserSchedule(users[0].userToken!!)
+                    updateUserCategoryAndSchedule(users[0].userToken!!)
 
                     // 서버로부터 업데이트 된 내용들을 로컬이랑 맞춘다.
                     users[0].userCategory = categoryItems
@@ -216,12 +184,41 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // 그룹 참여 창이 닫히면 수행할 이벤트
+        val popupOnDismissListener = DialogInterface.OnDismissListener {
+            Toast.makeText(
+                this,
+                "그룹에 참여했어요!",
+                Toast.LENGTH_LONG
+            ).show()
+
+            CoroutineScope(Dispatchers.Main).launch {
+                val users = CoroutineScope(Dispatchers.IO).async {
+                    userLocalDB.userDao().getAll()
+                }.await()
+
+                // 카테고리 & 스케줄 업데이트
+                updateUserCategoryAndSchedule(users[0].userToken!!)
+
+                // 서버로부터 업데이트 된 내용들을 로컬이랑 맞춘다.
+                users[0].userCategory = categoryItems
+                users[0].userSchedule = scheduleItems
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    userLocalDB.userDao().update(users[0])
+                }
+            }
+        }
+
         // 그룹 참여 버튼 클릭시 이벤트
         binding.calendarBottomGroupJoinButton.setOnClickListener {
             if (!isUserLogin) {
                 Toast.makeText(binding.root.context, "로그인이 필요한 기능이에요", Toast.LENGTH_LONG).show()
             } else {
-                GroupJoinPopup(this).show()
+
+                val groupJoinPopup = GroupJoinPopup(this)
+                groupJoinPopup.setOnDismissListener(popupOnDismissListener)
+                groupJoinPopup.show()
             }
         }
 
@@ -244,35 +241,34 @@ class MainActivity : AppCompatActivity() {
                     val users = CoroutineScope(Dispatchers.IO).async {
                         userLocalDB.userDao().getAll()
                     }.await()
-//                Log.e("token", users[0].userToken!!)
-                    //users[0].userToken!!
-                    apiGroupListInfo.getGroupListInfo(users[0].userToken!!
-                    ).enqueue(object : Callback<GroupListInfoJSON> {
-                        override fun onResponse(
-                            call: Call<GroupListInfoJSON>,
-                            response: Response<GroupListInfoJSON>,
-                        ) {
-                            getGroupManagementActivity(response.body()?.organizationInfoResponseList!!)
-                        }
 
-                        override fun onFailure(call: Call<GroupListInfoJSON>, t: Throwable) {
-                            Log.d(ContentValues.TAG, "실패 : $t")
-                        }
-                    })
+                    apiGroupListInfo.getGroupListInfo(users[0].userToken!!)
+                        .enqueue(object : Callback<GroupListInfoJSON> {
+                            override fun onResponse(
+                                call: Call<GroupListInfoJSON>,
+                                response: Response<GroupListInfoJSON>,
+                            ) {
+                                getGroupManagementActivity(response.body()?.organizationInfoResponseList!!)
+                            }
+
+                            override fun onFailure(call: Call<GroupListInfoJSON>, t: Throwable) {
+                                Log.d(ContentValues.TAG, "실패 : $t")
+                            }
+                        })
                 }
             }
         }
     }
 
-    private fun getGroupManagementActivity(organizationInfoResponseListObject:Array<GroupInfoJSON> ) {
+    private fun getGroupManagementActivity(organizationInfoResponseListObject: Array<GroupInfoJSON>) {
         val intent = Intent(this, GroupManagementActivity::class.java)
-        intent.putExtra("organizationInfoResponseListObject",organizationInfoResponseListObject)
+        intent.putExtra("organizationInfoResponseListObject", organizationInfoResponseListObject)
         startActivity(intent)
         finish()
     }
 
     // 카테고리 업데이트
-    private fun updateUserCategory(userToken: String) {
+    private fun updateUserCategoryAndSchedule(userToken: String) {
         val apiGetMyOrganization = retrofit.create(APIGetMyOrganization::class.java)
 
         apiGetMyOrganization.getMyOrganization(userToken)
@@ -303,15 +299,14 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
-                    binding.calendarCategoryRv.adapter!!.notifyDataSetChanged()
-
                     // 스케줄 업데이트
                     updateUserSchedule(userToken)
                 }
 
                 override fun onFailure(call: Call<MyOrganizationJSON>, t: Throwable) {
                     Log.e("실패", "$t")
-                    Toast.makeText(binding.root.context, "카테고리 업데이트에 실패했어요", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(binding.root.context, "카테고리 업데이트에 실패했어요", Toast.LENGTH_SHORT)
+                        .show()
                 }
             })
     }
@@ -328,43 +323,67 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     response.body()!!.scheduleDtoList.forEach { schedule ->
                         // 카테고리 색 얻어서 스케줄 추가하기
-                        categoryItems.forEach { category ->
-                            if (category.categoryId == schedule.id.toString()) {
-                                // 스케줄 추가하기
-                                scheduleItems.add(
-                                    CalendarScheduleObject(
-                                        id = schedule.id.toInt(),
-                                        color = Color.parseColor(category.color),
-                                        text = schedule.title,
-                                        startDate = LocalDateTime.parse(schedule.startDate + "Z", DateTimeFormatter.ISO_OFFSET_DATE_TIME),
-                                        endDate = LocalDateTime.parse(schedule.endDate + "Z", DateTimeFormatter.ISO_OFFSET_DATE_TIME),
-                                        isHoliday = false
-                                    )
-                                )
-                            }
-                        }
+                        val organizationInfo = schedule.organizationDto
+                        scheduleItems.add(
+                            CalendarScheduleObject(
+                                id = organizationInfo.organizationId.toInt(),
+                                color = Color.parseColor(organizationInfo.color),
+                                text = schedule.title,
+                                startDate = LocalDateTime.parse(schedule.startDate + "Z",
+                                    DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+                                endDate = LocalDateTime.parse(schedule.endDate + "Z",
+                                    DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+                                isHoliday = false
+                            )
+                        )
                     }
+                    updateViewWithCategory(categoryItems[0])
                 }
 
                 override fun onFailure(call: Call<GetSchedulesJSON>, t: Throwable) {
                     Log.e(ContentValues.TAG, "실패 : $t")
-                    Toast.makeText(binding.root.context, "스케줄 업데이트에 실패했어요", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(binding.root.context, "스케줄 업데이트에 실패했어요", Toast.LENGTH_SHORT)
+                        .show()
                 }
             })
+    }
+
+    // 카테고리에 따라 캘린더와 카테고리 뷰를 업데이트하는 메서드
+    private fun updateViewWithCategory(category: Category) {
+        categoryItems.forEach { c ->
+            c.isSelected = c.name == category.name
+
+            // 카테고리 뷰 업데이트
+            binding.calendarCategoryRv.adapter!!.notifyDataSetChanged()
+
+            if (category.name == "통합") {
+                // 카테고리가 통합일 경우
+                binding.calendarView.setSchedules(scheduleItems)
+            } else {
+                val scheduleList = mutableListOf<CalendarScheduleObject>()
+                scheduleItems.forEach { s ->
+                    // 스케줄의 아이디는 organizationID와 동일하다
+                    if (s.id == category.categoryId!!.toInt()) {
+                        scheduleList.add(s)
+                    }
+                }
+                binding.calendarView.setSchedules(scheduleList)
+            }
+        }
     }
 }
 
 @JsonClass(generateAdapter = true)
 data class Category(
     var isSelected: Boolean,
-    var categoryId: String?=null,
-    var color: String?=null,
-    val name: String?=null,
-    val owner: String?=null
+    var categoryId: String? = null,
+    var color: String? = null,
+    val name: String? = null,
+    val owner: String? = null
 )
 
-class CalendarCategoryRVAdapter (
-    val items : MutableList<Category>
+class CalendarCategoryRVAdapter(
+    val items: MutableList<Category>
 ) : RecyclerView.Adapter<CalendarCategoryRVAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(
@@ -380,15 +399,15 @@ class CalendarCategoryRVAdapter (
 
     // 클릭 이벤트를 위한 인터페이스
     interface ItemClick {
-        fun onClick(view : View, position: Int) {}
+        fun onClick(view: View, position: Int) {}
     }
 
-    var itemClick : ItemClick? = null
+    var itemClick: ItemClick? = null
 
     override fun onBindViewHolder(holder: CalendarCategoryRVAdapter.ViewHolder, position: Int) {
         if (itemClick != null) {
-            holder.itemView.setOnClickListener{
-                    v -> itemClick?.onClick(v, position)
+            holder.itemView.setOnClickListener { v ->
+                itemClick?.onClick(v, position)
             }
         }
         holder.bindItems(items[position])
@@ -398,9 +417,10 @@ class CalendarCategoryRVAdapter (
         return items.size
     }
 
-    inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bindItems(item: Category) {
-            val itemTextView = itemView.findViewById<TextView>(R.id.calendar_category_rv_item_text)
+            val itemTextView =
+                itemView.findViewById<TextView>(R.id.calendar_category_rv_item_text)
             itemTextView.text = item.name
             if (item.isSelected) {
                 itemTextView.setTextColor(Color.parseColor("#C0C6FF"))
