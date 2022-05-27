@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.drunkenboys.ckscalendar.data.CalendarScheduleObject
 import com.example.ccm.Category
+import com.example.ccm.MainActivity
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 

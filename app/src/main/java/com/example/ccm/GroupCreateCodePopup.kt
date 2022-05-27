@@ -53,8 +53,6 @@ class GroupCreateCodePopup(context: Context) : Dialog(context) {
             groupJoinCodeCopyButton.setBackgroundResource(R.drawable.light_purple_group_join_button_top_bottom_right_radius_20dp)
             groupJoinCodeCopyButton.text = "복사완료!"
             groupJoinCode.setTextColor(Color.parseColor("#8E8E8E"))
-
-
         }
     }
 
