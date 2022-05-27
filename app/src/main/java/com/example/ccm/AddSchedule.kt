@@ -68,6 +68,12 @@ class AddSchedule : AppCompatActivity() {
         setAlarmSpinner()
         setGropeSpinner()
 
+        binding.addScheduleBackButton.setOnClickListener{
+            val intent = Intent(binding.root.context, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
         // 취소 버튼 클릭시 발생할 이벤트
         binding.addScheduleCancelButton.setOnClickListener {
             val intent = Intent(binding.root.context, MainActivity::class.java)

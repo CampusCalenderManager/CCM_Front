@@ -35,6 +35,12 @@ class SignUpActivity : AppCompatActivity() {
 
             callPostSignUpApi(signUpName, signUpUsername, signUpPassword)
         }
+
+        binding.signUpBackButton.setOnClickListener {
+            val intent = Intent(binding.root.context, SignInActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 
     private fun callPostSignUpApi(

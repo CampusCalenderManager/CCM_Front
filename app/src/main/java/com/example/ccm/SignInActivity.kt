@@ -37,8 +37,20 @@ class SignInActivity : AppCompatActivity() {
             callSignInAPI(userNameInput.text.toString(), passwordInput.text.toString())
         }
 
+        binding.loginCancleButton.setOnClickListener {
+            val intent = Intent(binding.root.context, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
         binding.loginSignUpButton.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        binding.loginBackButton.setOnClickListener {
+            val intent = Intent(binding.root.context, MainActivity::class.java)
             startActivity(intent)
             finish()
         }
