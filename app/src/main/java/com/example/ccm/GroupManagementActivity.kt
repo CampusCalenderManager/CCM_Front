@@ -10,6 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.ccm.API.GroupInfoJSON
 
 class GroupManagementActivity : AppCompatActivity() {
+    override fun onBackPressed() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_group_management)
@@ -31,9 +36,21 @@ class GroupManagementActivity : AppCompatActivity() {
                 )
         }
 
+        val calendarButton = findViewById<ImageButton>(R.id.footer_button_calender)
+        calendarButton.setOnClickListener {
+            //Todo: 캘린더 정보 동기화
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
         // Todo : 리스트 아이템 클릭시 해당하는 그룹의 상세 페이지 보이기
-
-
+        val backButton = findViewById<ImageButton>(R.id.group_management_back_button)
+        backButton.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
 
 
 

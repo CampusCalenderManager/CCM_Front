@@ -268,6 +268,7 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, GroupManagementActivity::class.java)
         intent.putExtra("organizationInfoResponseListObject",organizationInfoResponseListObject)
         startActivity(intent)
+        finish()
     }
 
     // 카테고리 업데이트
