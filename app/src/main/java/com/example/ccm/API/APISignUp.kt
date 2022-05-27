@@ -6,7 +6,7 @@ import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
 
-interface ApiSignUp {
+interface APISignUp {
     //@FormUrlEncoded
 
     @Headers("Content-Type: application/json")

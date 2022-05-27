@@ -14,7 +14,7 @@
     android:elevation="10dp">
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/group_create_back_button"
         android:layout_width="20sp"
         android:layout_height="20sp"
         android:background="#C0C6FF"
