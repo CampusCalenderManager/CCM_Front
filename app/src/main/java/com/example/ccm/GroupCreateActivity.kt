@@ -3,10 +3,11 @@ package com.example.ccm
 import android.content.ContentValues
 import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import com.example.ccm.API.*
 import com.example.ccm.CCMApp.Companion.userLocalDB
 import kotlinx.coroutines.CoroutineScope
@@ -18,6 +19,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.*
 
 var participationCode = ""
 
@@ -46,10 +48,16 @@ class GroupCreateActivity : AppCompatActivity() {
         val groupCreateButton = findViewById<Button>(R.id.group_create_button)
         groupCreateButton.setOnClickListener {
 
+            val rnd = Random()
+            val r = Integer.toHexString(rnd.nextInt(256))
+            val g = Integer.toHexString(rnd.nextInt(256))
+            val b = Integer.toHexString(rnd.nextInt(256))
+            val color = "#${r+g+b}"
+
+
             val groupName = findViewById<EditText>(R.id.group_create_name_input)
 
             val groupDiscription = findViewById<EditText>(R.id.group_create_description_input)
-
 
             val retrofit = Retrofit.Builder()
                 .baseUrl("http://jenkins.argos.or.kr")
@@ -66,7 +74,8 @@ class GroupCreateActivity : AppCompatActivity() {
                 apiCreateGroup.postCreateGroup(users[0].userToken!!,
                     CreateGroupJSON(
                         groupName.text.toString(),
-                        groupDiscription.text.toString()
+                        groupDiscription.text.toString(),
+                        color
                     )
                 ).enqueue(object : Callback<CreateGroupCode> {
                     override fun onResponse(
