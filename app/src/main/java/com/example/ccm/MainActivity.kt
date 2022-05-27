@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
                 // 토큰이 없으므로 일정을 공유하지도 그룹에 참여하지도 못한다.
                 val categoryListBase = listOf(
                     Category(true, "-2", null, "통합"),
-                    Category(false, "-1", ScheduleColorType.BLUE.color.toString(), "개인"),
+                    Category(false, "-1", "#59bfff", "개인"),
                 )
 
                 CoroutineScope(Dispatchers.IO).launch {
@@ -83,6 +83,7 @@ class MainActivity : AppCompatActivity() {
                         categoryItems.add(category)
                     }
                 }
+                Log.e("category", users[0].userCategory!!.toString())
                 binding.calendarCategoryRv.adapter!!.notifyDataSetChanged()
 
                 users[0].userSchedule?.forEach { schedule ->

@@ -2,6 +2,7 @@ package com.example.ccm
 
 import android.app.AlertDialog
 import android.content.ContentValues.TAG
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -48,26 +49,41 @@ class AddSchedule : AppCompatActivity() {
         binding = ActivityAddScheduleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        categoryList.clear() // 업데이트된 카테고리 리스트는 항상 초기화 해주어야한다.
+
+        // api 요청을 위한 retrofit 객체 생성
         retrofit = Retrofit.Builder()
             .baseUrl("http://jenkins.argos.or.kr")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
+        // 초기 세팅
         setDatePicker()
         setAlarmSpinner()
-        setGropeSpinner() // 그룹 리스트 생성
+        setGropeSpinner()
 
+        // 취소 버튼 클릭시 발생할 이벤트
+        binding.addScheduleCancelButton.setOnClickListener {
+            val intent = Intent(binding.root.context, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        // DB 에 저장될 스케줄 리스트
         val updatedSchedule = mutableListOf<CalendarScheduleObject>()
 
+        // 일정 추가 버튼을 누르면 발생하는 이벤트
         binding.addScheduleSaveButton.setOnClickListener {
+            // 입력된 값들 정리
             setPostStartAlarm()
             val postTitle = binding.addScheduleTitle.text.toString()
             val postContent = binding.addScheduleContent.text.toString()
             val postIsShared = binding.addScheduleIsShared.showText.toString().toBoolean()
             val postIsAlarm = binding.addScheduleIsAlarm.showText.toString().toBoolean()
-            var postOrganizationID: String = ""
-            var categoryColor: String = ""
+            var postOrganizationID = ""
+            var categoryColor = ""
 
+            // 선택된 그룹이 가진 id와 color 값 정리
             categoryList.forEach { category ->
                 if (category.name == binding.groupSpinner.selectedItem.toString()) {
                     postOrganizationID = category.categoryId!!
@@ -75,6 +91,7 @@ class AddSchedule : AppCompatActivity() {
                 }
             }
 
+            // api 요청을 위한 인터페이스 객체 생성
             val apiAddSchedule = retrofit.create(ApiAddSchedule::class.java)
 
             CoroutineScope(Dispatchers.Main).launch {
@@ -82,14 +99,12 @@ class AddSchedule : AppCompatActivity() {
                     userLocalDB.userDao().getAll()
                 }.await()
 
-                CoroutineScope(Dispatchers.IO).async {
-                    userLocalDB.userDao().update(users[0])
-                }.await()
-
+                // 로컬 스케줄을 업데이트 하기 위한 스케줄 리스트에 넣기
                 users[0].userSchedule!!.forEach { schedule ->
                     updatedSchedule.add(schedule)
                 }
 
+                // 추가될 스케줄을 업데이트 하기 위한 스케줄 리스트에 넣기
                 updatedSchedule.add(
                     CalendarScheduleObject(
                         id = postOrganizationID.toInt(),
@@ -101,16 +116,22 @@ class AddSchedule : AppCompatActivity() {
                     )
                 )
 
+                // 로컬 스케줄 업데이트
                 users[0].userSchedule = updatedSchedule
 
-                // 로컬에 스케줄 저장
+                // 로컬 카테고리 업데이트
+                Log.e("beforeUpdate category", users[0].userCategory.toString())
+                Log.e("afterUpdate category", categoryList.toString())
+                users[0].userCategory = categoryList
+                Log.e("update category", users[0].userCategory.toString())
+
+                // 업데이트 내역 로컬 DB 에 저장
                 CoroutineScope(Dispatchers.IO).async {
                     userLocalDB.userDao().update(users[0])
                 }
 
                 // 개인 일정이 아니라면 서버에 데이터 POST
                 if (postOrganizationID.toInt() > -1) {
-                    Log.e("??", postOrganizationID)
                     apiAddSchedule.postAddSchedule(users[0].userToken!!,
                         AddScheduleJSON(
                             title = postTitle,
@@ -127,13 +148,32 @@ class AddSchedule : AppCompatActivity() {
                             call: Call<GetScheduleJSON>,
                             response: Response<GetScheduleJSON>,
                         ) {
-                            Log.d(TAG, "성공 : ${response.code()} ${response.raw()}")
+                            // 일정 추가가 성공했다면 메인으로 가기
+                            Toast.makeText(
+                                binding.root.context,
+                                "일정이 성공적으로 등록되었어요",
+                                Toast.LENGTH_LONG
+                            ).show()
+
+                            val intent = Intent(binding.root.context, MainActivity::class.java)
+                            startActivity(intent)
+                            finish()
                         }
 
                         override fun onFailure(call: Call<GetScheduleJSON>, t: Throwable) {
-                            Log.d(TAG, "실패 : $t")
+                            Log.e(TAG, "실패 : $t")
                         }
                     })
+                } else {
+                    // 서버에 저장하는게 아니면 바로 메인으로 가기
+                    Toast.makeText(
+                        binding.root.context,
+                        "일정이 성공적으로 등록되었어요",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    val intent = Intent(binding.root.context, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
                 }
             }
         }
@@ -159,6 +199,9 @@ class AddSchedule : AppCompatActivity() {
             }.await()
 
             // 로컬의 카테고리 넣어주기
+
+            Log.e("before init categoryList", users[0].userCategory.toString())
+
             users[0].userCategory!!.forEach { category ->
                 if (category.name == "개인") {
                     groupList.add(category.name)
@@ -166,8 +209,10 @@ class AddSchedule : AppCompatActivity() {
                 }
             }
 
-            val apiGetMyOrganization = retrofit.create(APIGetMyOrganization::class.java)
+            Log.e("init CategoryList", categoryList.toString())
+
             CoroutineScope(Dispatchers.IO).async {
+                val apiGetMyOrganization = retrofit.create(APIGetMyOrganization::class.java)
                 apiGetMyOrganization.getMyOrganization(users[0].userToken!!)
                     .enqueue(object : Callback<MyOrganizationJSON> {
                         override fun onResponse(
@@ -175,7 +220,7 @@ class AddSchedule : AppCompatActivity() {
                             response: Response<MyOrganizationJSON>,
                         ) {
                             val serverGroupList = response.body()!!.organizationInfoResponseList
-
+                            Log.e("serverGroupList", serverGroupList.toString())
                             serverGroupList.forEach { organizationInfo ->
                                 groupList.add(organizationInfo.title)
                                 categoryList.add(
@@ -186,7 +231,7 @@ class AddSchedule : AppCompatActivity() {
                                         name = organizationInfo.title
                                     )
                                 )
-                                users[0].userCategory = categoryList
+                                groupAdapter.notifyDataSetChanged()
                             }
                         }
 
@@ -200,8 +245,6 @@ class AddSchedule : AppCompatActivity() {
                         }
                     })
             }.await()
-
-            groupAdapter.notifyDataSetChanged()
         }
     }
 
@@ -230,11 +273,9 @@ class AddSchedule : AppCompatActivity() {
             "${currentYear}년 ${currentMonth}월 ${currentDate}일 ${currentHour}시 ${currentMinute}분"
 
         postStartDate = "${currentYear}-${
-            String.format("%02d",
-                currentMonth.toInt())
+            String.format("%02d", currentMonth.toInt())
         }-${currentDate}T${
-            String.format("%02d",
-                currentHour)
+            String.format("%02d",currentHour)
         }:${
             String.format("%02d",currentMinute)
         }:00"
@@ -470,7 +511,13 @@ class AddSchedule : AppCompatActivity() {
         }
 
         postStartDate =
-            "${year}-${String.format("%02d", month)}-${date}T${hour.value}:${minute.value}:00"
+            "${year}-${
+                String.format("%02d", month)
+            }-${date}T${
+                String.format("%02d",hour.value)
+            }:${
+                String.format("%02d",minute.value)
+            }:00"
 
         dialog.setView(mView)
         dialog.create()
@@ -542,8 +589,13 @@ class AddSchedule : AppCompatActivity() {
             dialog.cancel()
         }
 
-        postEndDate =
-            "${year}-${String.format("%02d", month)}-${date}T${hour.value}:${minute.value}:00"
+        postEndDate = "${year}-${
+            String.format("%02d", month)
+        }-${date}T${
+            String.format("%02d",hour.value)
+        }:${
+            String.format("%02d",minute.value)
+        }:00"
 
         dialog.setView(mView)
         dialog.create()
@@ -582,6 +634,12 @@ class AddSchedule : AppCompatActivity() {
                 postStartAlarm = formatter.format(date.time - 24 * 60 * 60 * 1000)
             }
         }
+    }
+
+    override fun onBackPressed() {
+        val intent = Intent(binding.root.context, MainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
 
