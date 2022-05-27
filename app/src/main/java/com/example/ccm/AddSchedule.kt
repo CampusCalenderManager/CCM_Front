@@ -43,19 +43,25 @@ class AddSchedule : AppCompatActivity() {
     lateinit var binding: ActivityAddScheduleBinding
     lateinit var retrofit: Retrofit
 
+    var isUserLogin: Boolean = false
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddScheduleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        isUserLogin = intent.getBooleanExtra("isUserLogin", false)
+
         categoryList.clear() // 업데이트된 카테고리 리스트는 항상 초기화 해주어야한다.
 
         // api 요청을 위한 retrofit 객체 생성
-        retrofit = Retrofit.Builder()
-            .baseUrl("http://jenkins.argos.or.kr")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        if (isUserLogin) {
+            retrofit = Retrofit.Builder()
+                .baseUrl("http://jenkins.argos.or.kr")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+        }
 
         // 초기 세팅
         setDatePicker()
@@ -72,14 +78,51 @@ class AddSchedule : AppCompatActivity() {
         // DB 에 저장될 스케줄 리스트
         val updatedSchedule = mutableListOf<CalendarScheduleObject>()
 
+        // 공유버튼 클릭시 이벤트
+        binding.addScheduleIsShared.setOnCheckedChangeListener { _, checked ->
+            val selectedGroupName = binding.groupSpinner.selectedItem.toString()
+            if (checked) {
+                if (selectedGroupName == "개인") {
+                    binding.addScheduleIsShared.toggle()
+                    Toast.makeText(
+                        binding.root.context,
+                        "개인 일정은 공유할 수 없어요",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val users = CoroutineScope(Dispatchers.IO).async {
+                            userLocalDB.userDao().getAll()
+                        }.await()
+
+                        var selectedOrganizationOwner: String? = null
+                        categoryList.forEach { category ->
+                            if (category.name == selectedGroupName) {
+                                selectedOrganizationOwner = category.owner
+                            }
+                        }
+
+                        if (users[0].username != selectedOrganizationOwner) {
+                            binding.addScheduleIsShared.toggle()
+                            Toast.makeText(
+                                binding.root.context,
+                                "그룹의 소유자만 일정을 공유할 수 있어요",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
+            }
+        }
+
         // 일정 추가 버튼을 누르면 발생하는 이벤트
         binding.addScheduleSaveButton.setOnClickListener {
             // 입력된 값들 정리
             setPostStartAlarm()
             val postTitle = binding.addScheduleTitle.text.toString()
             val postContent = binding.addScheduleContent.text.toString()
-            val postIsShared = binding.addScheduleIsShared.showText.toString().toBoolean()
-            val postIsAlarm = binding.addScheduleIsAlarm.showText.toString().toBoolean()
+            val postIsShared = binding.addScheduleIsShared.isChecked
+            val postIsAlarm = binding.addScheduleIsAlarm.isChecked
             var postOrganizationID = ""
             var categoryColor = ""
 
@@ -90,9 +133,6 @@ class AddSchedule : AppCompatActivity() {
                     categoryColor = category.color!!
                 }
             }
-
-            // api 요청을 위한 인터페이스 객체 생성
-            val apiAddSchedule = retrofit.create(ApiAddSchedule::class.java)
 
             CoroutineScope(Dispatchers.Main).launch {
                 val users = CoroutineScope(Dispatchers.IO).async {
@@ -127,40 +167,50 @@ class AddSchedule : AppCompatActivity() {
                     userLocalDB.userDao().update(users[0])
                 }
 
-                // 개인 일정이 아니라면 서버에 데이터 POST
-                if (postOrganizationID.toInt() > -1) {
-                    apiAddSchedule.postAddSchedule(users[0].userToken!!,
-                        AddScheduleJSON(
-                            title = postTitle,
-                            content = postContent,
-                            startDate = postStartDate,
-                            endDate = postEndDate,
-                            startAlarm = postStartAlarm,
-                            isShared = postIsShared,
-                            isAlarm = postIsAlarm,
-                            organizationId = postOrganizationID.toLong()
-                        )
-                    ).enqueue(object : Callback<GetScheduleJSON> {
-                        override fun onResponse(
-                            call: Call<GetScheduleJSON>,
-                            response: Response<GetScheduleJSON>,
-                        ) {
-                            // 일정 추가가 성공했다면 메인으로 가기
-                            Toast.makeText(
-                                binding.root.context,
-                                "일정이 성공적으로 등록되었어요",
-                                Toast.LENGTH_LONG
-                            ).show()
+                // 개인 일정이 아니면서 공유하는 일정인 경우 서버에 데이터 POST
+                if (postOrganizationID.toInt() > -1 && postIsShared) {
+                    if (!isUserLogin) {
+                        Toast.makeText(
+                            binding.root.context,
+                            "로그인 없이 해당 기능을 공유할 수 없어요",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
 
-                            val intent = Intent(binding.root.context, MainActivity::class.java)
-                            startActivity(intent)
-                            finish()
-                        }
+                        val apiAddSchedule = retrofit.create(ApiAddSchedule::class.java)
+                        apiAddSchedule.postAddSchedule(users[0].userToken!!,
+                            AddScheduleJSON(
+                                title = postTitle,
+                                content = postContent,
+                                startDate = postStartDate,
+                                endDate = postEndDate,
+                                startAlarm = postStartAlarm,
+                                isShared = postIsShared,
+                                isAlarm = postIsAlarm,
+                                organizationId = postOrganizationID.toLong()
+                            )
+                        ).enqueue(object : Callback<GetScheduleJSON> {
+                            override fun onResponse(
+                                call: Call<GetScheduleJSON>,
+                                response: Response<GetScheduleJSON>,
+                            ) {
+                                // 일정 추가가 성공했다면 메인으로 가기
+                                Toast.makeText(
+                                    binding.root.context,
+                                    "일정이 성공적으로 등록되었어요",
+                                    Toast.LENGTH_LONG
+                                ).show()
 
-                        override fun onFailure(call: Call<GetScheduleJSON>, t: Throwable) {
-                            Log.e(TAG, "실패 : $t")
-                        }
-                    })
+                                val intent = Intent(binding.root.context, MainActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            }
+
+                            override fun onFailure(call: Call<GetScheduleJSON>, t: Throwable) {
+                                Log.e(TAG, "실패 : $t")
+                            }
+                        })
+                    }
                 } else {
                     // 서버에 저장하는게 아니면 바로 메인으로 가기
                     Toast.makeText(
@@ -196,6 +246,8 @@ class AddSchedule : AppCompatActivity() {
             }.await()
 
             // 로컬의 카테고리 넣어주기
+
+            Log.e("??", users[0].userCategory.toString())
             users[0].userCategory!!.forEach { category ->
                 if (category.name == "개인") {
                     groupList.add(category.name)
@@ -203,39 +255,45 @@ class AddSchedule : AppCompatActivity() {
                 }
             }
 
-            CoroutineScope(Dispatchers.IO).async {
-                val apiGetMyOrganization = retrofit.create(APIGetMyOrganization::class.java)
-                apiGetMyOrganization.getMyOrganization(users[0].userToken!!)
-                    .enqueue(object : Callback<MyOrganizationJSON> {
-                        override fun onResponse(
-                            call: Call<MyOrganizationJSON>,
-                            response: Response<MyOrganizationJSON>,
-                        ) {
-                            val serverGroupList = response.body()!!.organizationInfoResponseList
-                            serverGroupList.forEach { organizationInfo ->
-                                groupList.add(organizationInfo.title)
-                                categoryList.add(
-                                    Category(
-                                        false,
-                                        categoryId = organizationInfo.organizationId.toString(),
-                                        color = organizationInfo.color,
-                                        name = organizationInfo.title
-                                    )
-                                )
-                                groupAdapter.notifyDataSetChanged()
-                            }
-                        }
+            groupAdapter.notifyDataSetChanged()
 
-                        override fun onFailure(call: Call<MyOrganizationJSON>, t: Throwable) {
-                            Log.e(TAG, "실패 : $t")
-                            Toast.makeText(
-                                binding.root.context,
-                                "요청이 잘못되었어요",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    })
-            }.await()
+            // 서버에서 카테고리 가져와서 넣기
+            if (isUserLogin) {
+                CoroutineScope(Dispatchers.IO).async {
+                    val apiGetMyOrganization = retrofit.create(APIGetMyOrganization::class.java)
+                    apiGetMyOrganization.getMyOrganization(users[0].userToken!!)
+                        .enqueue(object : Callback<MyOrganizationJSON> {
+                            override fun onResponse(
+                                call: Call<MyOrganizationJSON>,
+                                response: Response<MyOrganizationJSON>,
+                            ) {
+                                val serverGroupList = response.body()!!.organizationInfoResponseList
+                                serverGroupList.forEach { organizationInfo ->
+                                    groupList.add(organizationInfo.title)
+                                    categoryList.add(
+                                        Category(
+                                            false,
+                                            categoryId = organizationInfo.organizationId.toString(),
+                                            color = organizationInfo.color,
+                                            name = organizationInfo.title,
+                                            owner = organizationInfo.presidentName
+                                        )
+                                    )
+                                    groupAdapter.notifyDataSetChanged()
+                                }
+                            }
+
+                            override fun onFailure(call: Call<MyOrganizationJSON>, t: Throwable) {
+                                Log.e(TAG, "실패 : $t")
+                                Toast.makeText(
+                                    binding.root.context,
+                                    "요청이 잘못되었어요",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        })
+                }.await()
+            }
         }
     }
 

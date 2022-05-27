@@ -1,5 +1,9 @@
 package com.example.ccm.API
 
+data class GetSchedulesJSON (
+    val scheduleDtoList: List<GetScheduleJSON>
+)
+
 data class GetScheduleJSON(
     var id: Long,
     var title: String,

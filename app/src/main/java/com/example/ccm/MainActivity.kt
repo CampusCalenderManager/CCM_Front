@@ -16,29 +16,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.drunkenboys.ckscalendar.data.CalendarScheduleObject
-import com.drunkenboys.ckscalendar.data.ScheduleColorType
-import com.example.ccm.API.APIGroupListInfo
-import com.example.ccm.API.GroupInfoJSON
-import com.example.ccm.API.GroupListInfoJSON
+import com.example.ccm.API.*
 import com.example.ccm.CCMApp.Companion.userLocalDB
 import com.example.ccm.LocalDB.User
 import com.example.ccm.databinding.ActivityMainBinding
 import com.squareup.moshi.JsonClass
 import kotlinx.coroutines.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
+import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
+    lateinit var retrofit: Retrofit
 
-    // Todo : 서버에서 데이터 받아서 카테고리 표시하기
     val categoryItems = mutableListOf<Category>()
 
-    // 스케쥴로 들어가는 아이템들은 카테고리의 위치와 같아야함.
     val scheduleItems = mutableListOf<CalendarScheduleObject>()
 
     var isUserLogin = false
@@ -49,6 +43,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // api 호출을 위한 retrofit 인스턴스 생성
+        retrofit = Retrofit.Builder()
+            .baseUrl("http://jenkins.argos.or.kr")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
         // 로컬 DB 는 비동기로 호출해야한다. 따라서 코루틴을 사용한다.
         CoroutineScope(Dispatchers.Main).launch {
             // 먼저 유저 목록을 불러온다.
@@ -57,12 +57,11 @@ class MainActivity : AppCompatActivity() {
                 userLocalDB.userDao().getAll()
             }.await()
 
+            // 앱을 처음 사용한다면 user 라는 이름으로 로컬 db에 생성
             if (users.isEmpty()) {
-                // 앱을 처음 사용한다면 user 라는 이름으로 로컬 db에 생성
-                // 토큰이 없으므로 일정을 공유하지도 그룹에 참여하지도 못한다.
                 val categoryListBase = listOf(
-                    Category(true, "-2", null, "통합"),
-                    Category(false, "-1", "#59bfff", "개인"),
+                    Category(true, "-2", null, "통합", "user"),
+                    Category(false, "-1", "#59bfff", "개인", "user"),
                 )
 
                 CoroutineScope(Dispatchers.IO).launch {
@@ -85,15 +84,26 @@ class MainActivity : AppCompatActivity() {
                 binding.calendarCategoryRv.adapter!!.notifyDataSetChanged()
             } else {
                 // 앱을 실행이 처음이 아니라면 우선 로컬 db 에서 데이터를 가져온다.
-
-                categoryItems.add(Category(true, "-2", null, "통합"))
+                categoryItems.add(Category(true, "-2", null, "통합", users[0].username))
                 users[0].userCategory?.forEach { category ->
                     if (category.name != "통합") {
-                        categoryItems.add(category)
+                        if (category.name == "개인") {
+                            categoryItems.add(
+                                Category(
+                                    isSelected = category.isSelected,
+                                    categoryId = category.categoryId,
+                                    color = category.color,
+                                    name = category.name,
+                                    owner = users[0].username
+                                )
+                            )
+                        } else {
+                            categoryItems.add(category)
+                        }
                     }
                 }
-                Log.e("category", users[0].userCategory!!.toString())
-                binding.calendarCategoryRv.adapter!!.notifyDataSetChanged()
+
+                binding.calendarCategoryRv.adapter!!.notifyDataSetChanged() // 오프라인일 경우를 대비
 
                 users[0].userSchedule?.forEach { schedule ->
                     scheduleItems.add(schedule)
@@ -103,20 +113,25 @@ class MainActivity : AppCompatActivity() {
                 binding.calendarHeaderUserIcon.text = users[0].username
 
                 // 토큰의 존재 여부를 통해 로그인 되었는지를 판단한다.
-                // Todo : 만약 토큰이 만료되었다면 다른 화면으로 가기 전에 로그인으로 돌려보내도록 하자.
                 isUserLogin = users[0].userToken != null
             }
-        }
 
-        if (isUserLogin) {
-            // Todo : 서버에서 카테고리와 스케줄을 받아온다.
-            // Todo : 서버에서 받아온 데이터들을 로컬에도 넣어준다.
+            if (isUserLogin) {
+                updateUserCategory(users[0].userToken!!)
+
+                // 서버로부터 업데이트 된 내용들을 로컬이랑 맞춘다.
+                users[0].userCategory = categoryItems
+                users[0].userSchedule = scheduleItems
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    userLocalDB.userDao().update(users[0])
+                }
+            }
         }
 
         val adapter = CalendarCategoryRVAdapter(categoryItems)
 
         // 특정 카테고리 클릭시, 그에 맞는 일정 보여주기
-        // Todo : 업데이트 됐을지도 모르기 때문에 특정 버튼 누를때마다 스케줄 받기
         adapter.itemClick = object : CalendarCategoryRVAdapter.ItemClick {
             override fun onClick(view: View, position: Int) {
                 categoryItems.forEach { c ->
@@ -124,6 +139,17 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 binding.calendarCategoryRv.adapter!!.notifyDataSetChanged()
+
+                // 로그인 되어있을 경우만 서버로부터 데이터 받아오기
+                if (isUserLogin) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val users = CoroutineScope(Dispatchers.IO).async {
+                            userLocalDB.userDao().getAll()
+                        }.await()
+
+                        updateUserSchedule(users[0].userToken!!)
+                    }
+                }
 
                 val categoryId = categoryItems[position].categoryId
 
@@ -156,80 +182,85 @@ class MainActivity : AppCompatActivity() {
         binding.calendarView.setupDefaultCalendarSet()
         binding.calendarView.setSchedules(scheduleItems)
 
+        // 유저 이름이 적힌 원 클릭시 이벤트
         binding.calendarHeaderUserIcon.setOnClickListener {
-            if (isUserLogin) {
-                Toast.makeText(binding.root.context, "이미 로그인 되었어요!", Toast.LENGTH_LONG).show()
-            } else {
-                val intent = Intent(this, SignInActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
+            val intent = Intent(this, SignInActivity::class.java)
+            startActivity(intent)
+            finish()
         }
 
+        // 업데이트 버튼 클릭시 이벤트
         binding.calendarUpdateButton.setOnClickListener {
-            // Todo : 버튼 누르면 서버에서 데이터 받아서 표시
-            // Todo : 받은 데이터 로컬에 다시 저장
-            isUserLogin = false
-            CoroutineScope(Dispatchers.Main).launch {
-                // 먼저 유저 목록을 불러온다.
-                // 사용자는 하나이므로 리스트의 첫번째를 사용하면 된다.
-                val users = CoroutineScope(Dispatchers.IO).async {
-                    userLocalDB.userDao().getAll()
-                }.await()
+            if (!isUserLogin) {
+                Toast.makeText(binding.root.context, "로그인이 필요한 기능이에요", Toast.LENGTH_LONG).show()
+            } else {
+                CoroutineScope(Dispatchers.Main).launch {
+                    val users = CoroutineScope(Dispatchers.IO).async {
+                        userLocalDB.userDao().getAll()
+                    }.await()
 
+                    // 카테고리 & 스케줄 업데이트
+                    updateUserCategory(users[0].userToken!!)
+                    updateUserSchedule(users[0].userToken!!)
 
-                CoroutineScope(Dispatchers.IO).async {
-                    userLocalDB.userDao().delete(users[0])
-                }.await()
+                    // 서버로부터 업데이트 된 내용들을 로컬이랑 맞춘다.
+                    users[0].userCategory = categoryItems
+                    users[0].userSchedule = scheduleItems
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        userLocalDB.userDao().update(users[0])
+                    }
+
+                    Toast.makeText(binding.root.context, "업데이트 되었어요!", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
+        // 그룹 참여 버튼 클릭시 이벤트
         binding.calendarBottomGroupJoinButton.setOnClickListener {
-
-            GroupJoinPopup(this).show()
+            if (!isUserLogin) {
+                Toast.makeText(binding.root.context, "로그인이 필요한 기능이에요", Toast.LENGTH_LONG).show()
+            } else {
+                GroupJoinPopup(this).show()
+            }
         }
 
-        // Todo : 하단에 있는 뒤로가기 버튼을 누르면 Main 으로 가도록 만들기 (?)
+        // 일정 추가 버튼 클릭시 이벤트
         binding.calendarBottomAddScheduleButton.setOnClickListener {
             val intent = Intent(this, AddSchedule::class.java)
+            intent.putExtra("isUserLogin", isUserLogin)
             startActivity(intent)
-            // finish() // 특별한 상황이 아니라면 항상 Activity 를 끝내준다.
+            finish()
         }
+
+        // 그룹 관리 버튼 클릭시 이벤트
         binding.footerBottomGroupManagementButton.setOnClickListener {
+            if (!isUserLogin) {
+                Toast.makeText(binding.root.context, "로그인이 필요한 기능이에요", Toast.LENGTH_LONG).show()
+            } else {
+                val apiGroupListInfo = retrofit.create(APIGroupListInfo::class.java)
 
-            Log.e("groupPage", "1")
-            // Todo : 서버에서 사용자의 그룹 리스트를 받아서 보여주기
-            val retrofit = Retrofit.Builder()
-                .baseUrl("http://jenkins.argos.or.kr")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-            val apiGroupListInfo = retrofit.create(APIGroupListInfo::class.java)
-
-            CoroutineScope(Dispatchers.Main).launch {
-                val users = CoroutineScope(Dispatchers.IO).async {
-                    CCMApp.userLocalDB.userDao().getAll()
-                }.await()
+                CoroutineScope(Dispatchers.Main).launch {
+                    val users = CoroutineScope(Dispatchers.IO).async {
+                        userLocalDB.userDao().getAll()
+                    }.await()
 //                Log.e("token", users[0].userToken!!)
-                //users[0].userToken!!
-                apiGroupListInfo.getGroupListInfo(users[0].userToken!!
-                ).enqueue(object : Callback<GroupListInfoJSON> {
-                    override fun onResponse(
-                        call: Call<GroupListInfoJSON>,
-                        response: Response<GroupListInfoJSON>,
-                    ) {
-                        Log.d(ContentValues.TAG, "성공 : ${response.raw()} ${response.message()}")
-                        getGroupManagementActivity(response.body()?.organizationInfoResponseList!!)
-                    }
+                    //users[0].userToken!!
+                    apiGroupListInfo.getGroupListInfo(users[0].userToken!!
+                    ).enqueue(object : Callback<GroupListInfoJSON> {
+                        override fun onResponse(
+                            call: Call<GroupListInfoJSON>,
+                            response: Response<GroupListInfoJSON>,
+                        ) {
+                            getGroupManagementActivity(response.body()?.organizationInfoResponseList!!)
+                        }
 
-                    override fun onFailure(call: Call<GroupListInfoJSON>, t: Throwable) {
-                        Log.d(ContentValues.TAG, "실패 : $t")
-                    }
-                })
+                        override fun onFailure(call: Call<GroupListInfoJSON>, t: Throwable) {
+                            Log.d(ContentValues.TAG, "실패 : $t")
+                        }
+                    })
+                }
             }
-
-
-
-            // finish() // 특별한 상황이 아니라면 항상 Activity 를 끝내준다. intent 는 쌓이기 때문.
         }
     }
 
@@ -239,7 +270,87 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    // 카테고리 업데이트
+    private fun updateUserCategory(userToken: String) {
+        val apiGetMyOrganization = retrofit.create(APIGetMyOrganization::class.java)
 
+        apiGetMyOrganization.getMyOrganization(userToken)
+            .enqueue(object : Callback<MyOrganizationJSON> {
+                override fun onResponse(
+                    call: Call<MyOrganizationJSON>,
+                    response: Response<MyOrganizationJSON>
+                ) {
+                    response.body()!!.organizationInfoResponseList.forEach { organizationInfo ->
+                        var flag = true
+                        categoryItems.forEach { category ->
+                            if (category.name == organizationInfo.title) {
+                                flag = false
+                            }
+                        }
+
+                        // 로컬 DB 에 없는 카테고리만 넣는다.
+                        if (flag) {
+                            categoryItems.add(
+                                Category(
+                                    isSelected = false,
+                                    categoryId = organizationInfo.organizationId.toString(),
+                                    color = organizationInfo.color,
+                                    name = organizationInfo.title,
+                                    owner = organizationInfo.presidentName
+                                )
+                            )
+                        }
+                    }
+
+                    binding.calendarCategoryRv.adapter!!.notifyDataSetChanged()
+
+                    // 스케줄 업데이트
+                    updateUserSchedule(userToken)
+                }
+
+                override fun onFailure(call: Call<MyOrganizationJSON>, t: Throwable) {
+                    Log.e("실패", "$t")
+                    Toast.makeText(binding.root.context, "카테고리 업데이트에 실패했어요", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    // 스케줄 업데이트
+    private fun updateUserSchedule(userToken: String) {
+        val apiGetSchedule = retrofit.create(APIGetSchedule::class.java)
+        apiGetSchedule.getMySchedule(userToken)
+            .enqueue(object : Callback<GetSchedulesJSON> {
+                @RequiresApi(Build.VERSION_CODES.O)
+                override fun onResponse(
+                    call: Call<GetSchedulesJSON>,
+                    response: Response<GetSchedulesJSON>,
+                ) {
+                    response.body()!!.scheduleDtoList.forEach { schedule ->
+                        // 카테고리 색 얻어서 스케줄 추가하기
+                        categoryItems.forEach { category ->
+                            if (category.categoryId == schedule.id.toString()) {
+                                // 스케줄 추가하기
+                                scheduleItems.add(
+                                    CalendarScheduleObject(
+                                        id = schedule.id.toInt(),
+                                        color = Color.parseColor(category.color),
+                                        text = schedule.title,
+                                        startDate = LocalDateTime.parse(schedule.startDate + "Z", DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+                                        endDate = LocalDateTime.parse(schedule.endDate + "Z", DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+                                        isHoliday = false
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<GetSchedulesJSON>, t: Throwable) {
+                    Log.e(ContentValues.TAG, "실패 : $t")
+                    Toast.makeText(binding.root.context, "스케줄 업데이트에 실패했어요", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
 }
 
 @JsonClass(generateAdapter = true)
@@ -247,7 +358,8 @@ data class Category(
     var isSelected: Boolean,
     var categoryId: String?=null,
     var color: String?=null,
-    val name: String?=null
+    val name: String?=null,
+    val owner: String?=null
 )
 
 class CalendarCategoryRVAdapter (

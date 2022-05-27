@@ -40,7 +40,7 @@ class SignInActivity : AppCompatActivity() {
         binding.loginSignUpButton.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
-            finish() // Todo : 회원가입 창에서 뒤로가기 누르면 끝남 이를 방지하자
+            finish()
         }
     }
 
@@ -74,6 +74,10 @@ class SignInActivity : AppCompatActivity() {
 
                         users[0].userToken = userToken
                         users[0].username = userData!!.name
+                        users[0].userCategory = listOf(
+                            Category(false, "-1", "#59bfff", "개인", userData!!.name),
+                        )
+                        users[0].userSchedule = listOf()
 
                         CoroutineScope(Dispatchers.IO).async {
                             userLocalDB.userDao().update(users[0])
