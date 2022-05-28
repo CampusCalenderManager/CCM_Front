@@ -186,12 +186,6 @@ class MainActivity : AppCompatActivity() {
 
         // 그룹 참여 창이 닫히면 수행할 이벤트
         val popupOnDismissListener = DialogInterface.OnDismissListener {
-            Toast.makeText(
-                this,
-                "그룹에 참여했어요!",
-                Toast.LENGTH_LONG
-            ).show()
-
             CoroutineScope(Dispatchers.Main).launch {
                 val users = CoroutineScope(Dispatchers.IO).async {
                     userLocalDB.userDao().getAll()
