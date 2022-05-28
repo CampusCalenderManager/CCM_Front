@@ -52,58 +52,64 @@ class GroupCreateActivity : AppCompatActivity() {
             val r = Integer.toHexString(rnd.nextInt(256))
             val g = Integer.toHexString(rnd.nextInt(256))
             val b = Integer.toHexString(rnd.nextInt(256))
-            val color = "#${r+g+b}"
+            val color = "#${r + g + b}"
 
 
             val groupName = findViewById<EditText>(R.id.group_create_name_input)
 
             val groupDiscription = findViewById<EditText>(R.id.group_create_description_input)
 
-            val retrofit = Retrofit.Builder()
-                .baseUrl("http://jenkins.argos.or.kr")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-            val apiCreateGroup = retrofit.create(APICreateGroup::class.java)
+            if (groupName.text.isNullOrBlank()) {
+                Toast.makeText(this, "그룹 이름이 입력되지 않았습니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("http://jenkins.argos.or.kr")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+                val apiCreateGroup = retrofit.create(APICreateGroup::class.java)
 
-            CoroutineScope(Dispatchers.Main).launch {
-                val users = CoroutineScope(Dispatchers.IO).async {
-                    userLocalDB.userDao().getAll()
-                }.await()
+
+
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    val users = CoroutineScope(Dispatchers.IO).async {
+                        userLocalDB.userDao().getAll()
+                    }.await()
 //                Log.e("token", users[0].userToken!!)
-                //users[0].userToken!!
-                apiCreateGroup.postCreateGroup(users[0].userToken!!,
-                    CreateGroupJSON(
-                        groupName.text.toString(),
-                        groupDiscription.text.toString(),
-                        color
-                    )
-                ).enqueue(object : Callback<CreateGroupCode> {
-                    override fun onResponse(
-                        call: Call<CreateGroupCode>,
-                        response: Response<CreateGroupCode>,
-                    ) {
-                        Log.d("login POST", "${response.body()}")
-                        createCodePopup(response.body()?.participationCodeResponse.toString())
-                        Log.d(ContentValues.TAG, "성공 : ${response.raw()} ${response.message()}")
-                    }
+                    //users[0].userToken!!
+                    apiCreateGroup.postCreateGroup(users[0].userToken!!,
+                        CreateGroupJSON(
+                            groupName.text.toString(),
+                            groupDiscription.text.toString(),
+                            color
+                        )
+                    ).enqueue(object : Callback<CreateGroupCode> {
+                        override fun onResponse(
+                            call: Call<CreateGroupCode>,
+                            response: Response<CreateGroupCode>,
+                        ) {
+                            Log.d("login POST", "${response.body()}")
+                            createCodePopup(response.body()?.participationCodeResponse.toString())
+                            Log.d(ContentValues.TAG, "성공 : ${response.raw()} ${response.message()}")
+                        }
 
-                    private fun createCodePopup(code: String) {
-                        setParticipationCode(code)
-
-
-                        val groupCreateCodePopup = GroupCreateCodePopup(this@GroupCreateActivity)
-                        groupCreateCodePopup.setOnCancelListener(popupOnCancelListener)
-                        groupCreateCodePopup.show()
-                    }
+                        private fun createCodePopup(code: String) {
+                            setParticipationCode(code)
 
 
+                            val groupCreateCodePopup =
+                                GroupCreateCodePopup(this@GroupCreateActivity)
+                            groupCreateCodePopup.setOnCancelListener(popupOnCancelListener)
+                            groupCreateCodePopup.show()
+                        }
 
-                    override fun onFailure(call: Call<CreateGroupCode>, t: Throwable) {
-                        Log.d(ContentValues.TAG, "실패 : $t")
-                    }
-                })
+
+                        override fun onFailure(call: Call<CreateGroupCode>, t: Throwable) {
+                            Log.d(ContentValues.TAG, "실패 : $t")
+                        }
+                    })
+                }
             }
-
 
 
         }
@@ -111,7 +117,7 @@ class GroupCreateActivity : AppCompatActivity() {
     }
 
     private fun addCancelButtonListener(cancelButton: Button) {
-        cancelButton.setOnClickListener{
+        cancelButton.setOnClickListener {
             // Todo : 서버에서 사용자의 그룹 리스트를 받아서 보여주기
             val retrofit = Retrofit.Builder()
                 .baseUrl("http://jenkins.argos.or.kr")
@@ -145,7 +151,7 @@ class GroupCreateActivity : AppCompatActivity() {
 
 
     private fun addBackButtonListener(backButton: ImageButton) {
-        backButton.setOnClickListener{
+        backButton.setOnClickListener {
             // Todo : 서버에서 사용자의 그룹 리스트를 받아서 보여주기
             val retrofit = Retrofit.Builder()
                 .baseUrl("http://jenkins.argos.or.kr")
@@ -206,9 +212,10 @@ class GroupCreateActivity : AppCompatActivity() {
             })
         }
     }
-    private fun getGroupManagementActivity(organizationInfoResponseListObject:Array<GroupInfoJSON> ) {
+
+    private fun getGroupManagementActivity(organizationInfoResponseListObject: Array<GroupInfoJSON>) {
         val intent = Intent(this, GroupManagementActivity::class.java)
-        intent.putExtra("organizationInfoResponseListObject",organizationInfoResponseListObject)
+        intent.putExtra("organizationInfoResponseListObject", organizationInfoResponseListObject)
         startActivity(intent)
     }
 
@@ -216,10 +223,10 @@ class GroupCreateActivity : AppCompatActivity() {
     private fun setParticipationCode(code: String) {
         participationCode = code
     }
+
     fun getParticipationCode(): String {
         return participationCode
     }
-
 
 
 }

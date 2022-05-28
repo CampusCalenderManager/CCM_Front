@@ -1,5 +1,6 @@
 package com.example.ccm
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.ContentValues
 import android.content.Context
@@ -27,7 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 class GroupJoinPopup(context: Context) : Dialog(context) {
-    private lateinit var binding : ActivityGroupJoinPopupBinding
+    private lateinit var binding: ActivityGroupJoinPopupBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +44,7 @@ class GroupJoinPopup(context: Context) : Dialog(context) {
             val groupJoinCode = groupJoinCodeInput.text
 
             if (groupJoinCode.isNullOrBlank()) {
-                Toast.makeText(context, "코드가 입력되지 않았습니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "참여코드가 입력되지 않았습니다.", Toast.LENGTH_SHORT).show()
                 this.dismiss()
             } else {
                 // Todo : 서버에 코드 검증 요청 후, 맞는 코드라면 그룹 관리에 그룹 추가하기
@@ -53,7 +54,7 @@ class GroupJoinPopup(context: Context) : Dialog(context) {
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
                 val apiJoinGroup = retrofit.create(APIJoinGroup::class.java)
-
+                this.dismiss()
                 CoroutineScope(Dispatchers.Main).launch {
                     val users = CoroutineScope(Dispatchers.IO).async {
                         CCMApp.userLocalDB.userDao().getAll()
@@ -67,8 +68,17 @@ class GroupJoinPopup(context: Context) : Dialog(context) {
                             call: Call<Void>,
                             response: Response<Void>,
                         ) {
-                            Log.d(ContentValues.TAG, "성공 : ${response.raw()} ${response.message()}")
-                            dismiss()
+                            Log.e(ContentValues.TAG, "성공 : ${response.raw()} ${response.message()}")
+                            if (response.code() == 200) {
+                                Toast.makeText(context, "그룹 참여가 완료되었습니다.", Toast.LENGTH_LONG).show()
+                            } else if (response.code() == 409) {
+                                Toast.makeText(context, "이미 가입한 그룹의 참여코드입니다.", Toast.LENGTH_LONG)
+                                    .show()
+                            } else {
+                                Toast.makeText(context, "참여 코드가 유효하지 않습니다.", Toast.LENGTH_LONG)
+                                    .show()
+                            }
+
                         }
 
                         override fun onFailure(call: Call<Void>, t: Throwable) {
