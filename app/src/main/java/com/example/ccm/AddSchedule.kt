@@ -112,7 +112,7 @@ class AddSchedule : AppCompatActivity() {
                             binding.addScheduleIsShared.toggle()
                             Toast.makeText(
                                 binding.root.context,
-                                "그룹의 소유자만 일정을 공유할 수 있어요",
+                                "그룹의 관리자만 일정을 공유할 수 있어요",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -149,7 +149,7 @@ class AddSchedule : AppCompatActivity() {
                 users[0].userSchedule!!.forEach { schedule ->
                     updatedSchedule.add(schedule)
                 }
-
+                Log.e("색",categoryColor)
                 // 추가될 스케줄을 업데이트 하기 위한 스케줄 리스트에 넣기
                 updatedSchedule.add(
                     CalendarScheduleObject(

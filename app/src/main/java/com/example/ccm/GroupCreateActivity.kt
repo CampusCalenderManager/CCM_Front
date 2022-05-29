@@ -49,11 +49,18 @@ class GroupCreateActivity : AppCompatActivity() {
         groupCreateButton.setOnClickListener {
 
             val rnd = Random()
-            val r = Integer.toHexString(rnd.nextInt(256))
-            val g = Integer.toHexString(rnd.nextInt(256))
-            val b = Integer.toHexString(rnd.nextInt(256))
-            val color = "#${r + g + b}"
+            var r:String = Integer.toHexString(rnd.nextInt(256))
+            var g:String = Integer.toHexString(rnd.nextInt(256))
+            var b:String = Integer.toHexString(rnd.nextInt(256))
+            Log.e("error", r+g+b)
 
+            val strR = r.padStart(2,'0')
+            val strG = g.padStart(2,'0')
+            val strB = b.padStart(2,'0')
+            Log.e("error", strR+strG+strB)
+
+
+            val color = "#${strR+strG+strB}"
 
             val groupName = findViewById<EditText>(R.id.group_create_name_input)
 
