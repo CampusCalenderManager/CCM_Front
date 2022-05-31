@@ -568,7 +568,9 @@ class AddSchedule : AppCompatActivity() {
         postStartDate =
             "${year}-${
                 String.format("%02d", month)
-            }-${date}T${
+            }-${
+                String.format("%02d", date)
+            }T${
                 String.format("%02d",hour.value)
             }:${
                 String.format("%02d",minute.value)
