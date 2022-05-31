@@ -206,7 +206,7 @@ class AddSchedule : AppCompatActivity() {
                                     "일정이 성공적으로 등록되었어요",
                                     Toast.LENGTH_LONG
                                 ).show()
-
+                                Log.e("response",response.body().toString())
                                 val intent = Intent(binding.root.context, MainActivity::class.java)
                                 startActivity(intent)
                                 finish()
@@ -318,7 +318,7 @@ class AddSchedule : AppCompatActivity() {
 
         val currentYear = yearFormat.format(now)
         val currentMonth = monthFormat.format(now)
-        val currentDate = dateFormat.format(now).toInt()
+        val currentDate = dateFormat.format(now)
         val currentHour = hourFormat.format(now).toInt()
         val currentMinute = minuteFormat.format(now).toInt()
 
@@ -329,11 +329,12 @@ class AddSchedule : AppCompatActivity() {
 
         postStartDate = "${currentYear}-${
             String.format("%02d", currentMonth.toInt())
-        }-${String.format("%02d", currentDate)}T${
+        }-${String.format("%02d", currentDate.toInt())}T${
             String.format("%02d",currentHour)
         }:${
             String.format("%02d",currentMinute)
         }:00"
+        Log.e("asdf",String.format("%02d", currentDate.toInt()))
 
         postEndDate = postStartDate
 
@@ -664,7 +665,7 @@ class AddSchedule : AppCompatActivity() {
     fun setPostStartAlarm() {
         val alarmSpinner: Spinner = findViewById(R.id.alarmSpinner)
 
-        val formatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-d'T'HH:mm:ss")
+        val formatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
         val date: Date = formatter.parse(postStartDate)
         when (alarmSpinner.selectedItemId.toInt()) {
             0 -> {

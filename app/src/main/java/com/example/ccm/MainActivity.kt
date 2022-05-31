@@ -269,7 +269,7 @@ class MainActivity : AppCompatActivity() {
             .enqueue(object : Callback<MyOrganizationJSON> {
                 override fun onResponse(
                     call: Call<MyOrganizationJSON>,
-                    response: Response<MyOrganizationJSON>
+                    response: Response<MyOrganizationJSON>,
                 ) {
                     response.body()!!.organizationInfoResponseList.forEach { organizationInfo ->
                         var flag = true
@@ -315,6 +315,9 @@ class MainActivity : AppCompatActivity() {
                     call: Call<GetSchedulesJSON>,
                     response: Response<GetSchedulesJSON>,
                 ) {
+                    Log.e("apiget", response.body()!!.toString())
+                    Log.e("apiget", userToken)
+                    userToken
                     response.body()!!.scheduleDtoList.forEach { schedule ->
                         // 카테고리 색 얻어서 스케줄 추가하기
                         val organizationInfo = schedule.organizationDto
@@ -335,6 +338,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<GetSchedulesJSON>, t: Throwable) {
+
                     Log.e(ContentValues.TAG, "실패 : $t")
                     Toast.makeText(binding.root.context, "스케줄 업데이트에 실패했어요", Toast.LENGTH_SHORT)
                         .show()
@@ -373,11 +377,11 @@ data class Category(
     var categoryId: String? = null,
     var color: String? = null,
     val name: String? = null,
-    val owner: String? = null
+    val owner: String? = null,
 )
 
 class CalendarCategoryRVAdapter(
-    val items: MutableList<Category>
+    val items: MutableList<Category>,
 ) : RecyclerView.Adapter<CalendarCategoryRVAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(

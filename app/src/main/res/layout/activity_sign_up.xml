@@ -159,7 +159,7 @@
 
         <TextView
             android:id="@+id/signUp_password_title"
-            android:layout_width="78dp"
+            android:layout_width="wrap_content"
             android:layout_height="31dp"
             android:text="비밀번호"
             android:textColor="@color/black"
